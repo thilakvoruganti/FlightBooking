@@ -1,5 +1,6 @@
 import React,{ createContext, useContext, useState , useEffect} from 'react'
 import axios from 'axios'
+import { API_BASE } from '../../config/api'
 
 const AuthContent = createContext()
 
@@ -11,7 +12,7 @@ const AuthProvider = (props) => {
     token:'',
   })
 
-  axios.defaults.baseURL = "http://localhost:4000/api/v1"
+  axios.defaults.baseURL = API_BASE
   axios.defaults.headers.common['auth-token'] = auth?.token
 
 

@@ -6,6 +6,7 @@ import Input from '../../components/Input';
 import Dropdown from '../../components/Dropdown'
 import { useAuth } from '../../context/Auth'
 import { useFlight } from '../../context/Flight'
+import { API_BASE } from '../../config/api'
 
 const Register = () => {
     let navigate = useNavigate();
@@ -180,7 +181,7 @@ const Register = () => {
         if (validation) {
             setIsSubmitting(true)
             try {
-                const response = await fetch("http://localhost:4000/api/v1/auth", {
+                const response = await fetch(`${API_BASE}/auth`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

@@ -3,6 +3,7 @@ import * as moment from 'moment';
 import axios from 'axios'
 import { useAuth } from '../Auth'
 import { saveAs } from 'file-saver';
+import { API_BASE } from '../../config/api'
 
 const FlightContent = createContext()
 
@@ -10,7 +11,7 @@ const FlightContent = createContext()
 const FlightProvider = (props) => {
 
   const { auth } = useAuth()
-  axios.defaults.baseURL = "http://localhost:4000/api/v1"
+  axios.defaults.baseURL = API_BASE
   axios.defaults.headers.common['auth-token'] = auth?.token
 
   const defaultAirports = [

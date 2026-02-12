@@ -3,9 +3,10 @@ import flightContent from './FlightContext'
 import { saveAs } from 'file-saver';
 import { useAuth } from './Auth';
 import axios from 'axios';
+import { API_BASE, API_ORIGIN } from '../config/api';
 const FlightState = (props) => {
 
-    const host = "http://localhost:4000"
+    const host = API_ORIGIN
 
 
     const Airports = [
@@ -187,7 +188,7 @@ const FlightState = (props) => {
 
     // createpdf 
     const createPdf = async(bookingid,passengersinfo,tripFlights ) => {
-        const createpdf = await axios.post(`/createpdf`,{
+        const createpdf = await axios.post(`${API_BASE}/createpdf`,{
                     bookingid:bookingid,
                     passengersinfo:passengersinfo,
                     tripFlights:tripFlights

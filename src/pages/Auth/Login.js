@@ -5,6 +5,7 @@ import Alert from '../../components/Alert';
 import Input from '../../components/Input';
 import { useAuth } from '../../context/Auth'
 import { useFlight } from '../../context/Flight'
+import { API_BASE } from '../../config/api'
 
 const Login = () => {
     const {auth, setAuth } = useAuth()
@@ -55,7 +56,7 @@ const Login = () => {
         if (validation) {
             setIsSubmitting(true)
             try {
-                const response = await fetch("http://localhost:4000/api/v1/auth/login", {
+                const response = await fetch(`${API_BASE}/auth/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
