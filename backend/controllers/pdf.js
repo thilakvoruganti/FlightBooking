@@ -1,8 +1,21 @@
 const path = require('path')
-const pdf = require('html-pdf')
 const pdfTemplate = require('../documents')
 
+let pdf = null
+try {
+    pdf = require('html-pdf')
+} catch (error) {
+    pdf = null
+}
+
 const createPdf = (req, res) => {
+    if (!pdf) {
+        return res.status(503).json({
+            success: false,
+            message: 'PDF service unavailable: html-pdf is not installed on server',
+        })
+    }
+
     const bookingid = String(req.body?.bookingid || 'booking').replace(/[^a-zA-Z0-9-_]/g, '')
     const fileName = `ticket-${bookingid}.pdf`
     const outputPath = path.join(__dirname, '..', fileName)
