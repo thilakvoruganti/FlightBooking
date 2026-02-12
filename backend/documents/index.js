@@ -1,304 +1,349 @@
-module.exports = ({ bookingid, passengersinfo, tripFlights }) => {
-    const today = new Date();
-return `
-    <!doctype html>
-    <html>
-       <head>
-          <meta charset="utf-8">
-          <title>PDF Result Template</title>
-            <style>
-            body{
-                margin: 0;
-                padding: 0;
-            }
-            table, td {
-                border: 0;
-                border-collapse: collapse;
-            }
-            .pdf-title-con{
-                margin:20px 20px;
-            }
-            .pdf-title-con .cpy-name{
-                font: normal normal bold 20.01px/25.002px arial;
-            }
-            .title-i-m{
-                font: normal normal normal 10px/12px arial;
-            }
-            .etr{
-                color:white;
-                font: normal normal normal 15.006px/16.998px arial;
-                background-color: #5c0931;
-                padding:10px 20px 5px;
-            }
-            .pdf-body-con{
-                padding: 20px 15px 0;
-                border:0;
-            }
-            .fd-con{
-                border:0;
-            }
-            .fd-r-h-1{
-                padding-left:5px;
-                padding-bottom:5px;
-                padding-top:10px;
-            }
-            .fd-r-h-2{
-                padding-left:5px;
-                padding-bottom:5px;
-                padding-top:10px;
-            }
-            .fd-r-h-3{
-                padding-left:5px;
-                padding-bottom:5px;
-                padding-top:10px;
-            }
-            .fd-r-h-4{
-                padding-left:5px;
-                padding-bottom:5px;
-                padding-top:10px;
-            }
-            .fd-r-h-5{
-                padding-left:5px;
-                padding-bottom:5px;
-                padding-top:10px;
-            }
-            .fd-r-1{
-                padding-left:5px;
-                padding-bottom:3px;
-                padding-top:10px;
-            }
-            .fd-r-2{
-                padding-left:5px;
-                padding-bottom:3px;
-                padding-top:10px;
-            }
-            .fd-r-3{
-                padding-left:5px;
-                padding-bottom:3px;
-                padding-top:10px;
-            }
-            .fd-r-4{
-                padding-left:5px;
-                padding-bottom:3px;
-                padding-top:10px;
-            }
-            .fd-r-5{
-                padding-left:5px;
-                padding-bottom:3px;
-                padding-top:10px;
-            }
-            .fd-r-f-1{
-                padding-left:5px;
-                padding-bottom:3px;
-                padding-top:3px;
-            }
-            .fd-r-f-2{
-                padding-left:5px;
-                padding-bottom:3px;
-                padding-top:3px;
-            }
-            .fd-title-con{
-                color: #fff;
-                background-color: rgb(105, 102, 102);
-                padding: 10px 5px 5px;
-                font: normal normal normal 12.006px/12.998px arial;
-            }
-            .fd-header-con{
-                background-color: #ccc;
-                font: normal normal normal 13px/13px arial;
-            }
-            .fd-body-con{
-                font: normal normal normal 12.006px/12.998px arial;
-            }
-            .fd-last-con{
-                margin-top:3px;
-                border-bottom: 1px solid rgb(105, 102, 102);
-                font: normal normal normal 12.006px/12.998px arial;
-            }
-            .pd-con{
-                width:100%
-                padding: 20px 15px 0;
-            }
-            .pd-header-con{
-                color: #fff;
-                background-color: rgb(105, 102, 102);
-                font: normal normal normal 13px/13px arial;
-            }
-            .pd-body-con{
-                font: normal normal normal 12.006px/12.998px arial;
-            }
-            .pd-r-h-1{
-                padding-left:5px;
-                padding-bottom:5px;
-                padding-top:10px;
-            }
-            .pd-r-h-2{
-                padding-left:5px;
-                padding-bottom:5px;
-                padding-top:10px;
-            }
-            .pd-r-h-3{
-                padding-left:5px;
-                padding-bottom:5px;
-                padding-top:10px;
-            }
-            .pd-r-h-4{
-                padding-left:5px;
-                padding-bottom:5px;
-                padding-top:10px;
-            }
-            .pd-r-b-1{
-                padding-left:5px;
-                padding-bottom:5px;
-                padding-top:5px;
-            }
-            .pd-r-b-2{
-                padding-left:5px;
-                padding-bottom:5px;
-                padding-top:5px;
-            }
-            .pd-r-b-3{
-                padding-left:5px;
-                padding-bottom:5px;
-                padding-top:5px;
-            }
-            .pd-r-b-4{
-                padding-left:5px;
-                padding-bottom:5px;
-                padding-top:5px;
-            }
-            .pd-body-con{
-                padding: 10px 0;
-                border-bottom: 1px solid rgb(105, 102, 102);
-            }
-            .fd-b-i-s{
-                font: normal normal normal 15.006px/17.998px arial;
-            }
-            .fp-head{
-                color: #fff;
-                background-color: rgb(105, 102, 102);
-                font: normal normal normal 13px/13px arial;
-            }
-            .fp-body{
-                font: normal normal normal 12.006px/12.998px arial;
-                border-bottom: 1px solid rgb(105, 102, 102);
-            }
-            .fp-h-1{
-                padding-left:5px;
-                padding-bottom:5px;
-                padding-top:10px;
-            }
-            .fp-b-1{
-                padding-left:5px;
-                padding-bottom:5px;
-                padding-top:10px;
-                tect-align:right
-            }
-            .fp-b-2{
-                padding-left:5px;
-                padding-bottom:5px;
-                padding-top:10px;
-                text-align:right
-            }
-        </style>
-       </head>
-       <body>
-       <div class='pdf-con'>
-            <table class='pdf-title-con'>
-                <tr>
-                    <td style='width:55%' rowspan="2" class='cpy-name'>TV-Flights</td>
-                    <td style='width:45%' class='title-i-m'>Booking ref: ${bookingid}</td>
-                </tr>
-                <tr>
-                    <td  class='title-i-m'>Date: ${`${today.getDate()}. ${today.getMonth() + 1}. ${today.getFullYear()}.`}</td>
-                </tr>
-            </table>
-            <div class="etr">ELECTRONIC TICKET RECIEPT</div>
-            <div class='pdf-body-con'>
-                <table class='fd-con' style='width:100%'>
-                    <tr class="fd-title-con">
-                        <td style='width:30%' class='fd-r-h-1'>From</td>
-                        <td style='width:30%' class='fd-r-h-2'>To</td>
-                        <td style='width:13.3%' class='fd-r-h-3'>Flight</td>
-                        <td style='width:13.3%' class='fd-r-h-4'>Departure</td>
-                        <td style='width:13.3%' class='fd-r-h-5'>Arrival</td>
-                    </tr>
-                    ${tripFlights.map((element)=>{
-                        return  `<tr class="fd-header-con">
-                                    <td class='fd-r-1'>${element.departure+' '+element.departureairport}</td>
-                                    <td class='fd-r-2'>${element.destination+' '+element.destinationairport}</td>
-                                    <td class='fd-r-3'>${element.flightnumber}</td>
-                                    <td class='fd-r-4'>${element.departuretime}</td>
-                                    <td class='fd-r-5'>${element.destinationtime}</td>
-                                </tr>
-                                <tr class="fd-body-con">
-                                    <td class="fd-r-1">Class: ${element.tripclass}</td>
-                                    <td class="fd-r-2">Booking status: OK</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr class="fd-last-con">
-                                    <td class="fd-r-f-1">Operated by: ${element.flightname}</td>
-                                    <td class="fd-r-f-2">Marketed by: TV-Flights</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr class="fd-header-con">
-                                    <td class='fd-r-1'>${element.rdeparture+' '+element.rdepartureairport}</td>
-                                    <td class='fd-r-2'>${element.rdestination+' '+element.rdestinationairport}</td>
-                                    <td class='fd-r-3'>${element.rflightnumber}</td>
-                                    <td class='fd-r-4'>${element.rdeparturetime}</td>
-                                    <td class='fd-r-5'>${element.rdestinationtime}</td>
-                                </tr>
-                                <tr class="fd-body-con">
-                                    <td class="fd-r-1">Class: ${element.tripclass}</td>
-                                    <td class="fd-r-2">Booking status: OK</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr class="fd-last-con">
-                                    <td class="fd-r-f-1">Operated by: ${element.rflightname}</td>
-                                    <td class="fd-r-f-2">Marketed by: TV-Flights</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>`
-                    })}
-                </table>
-                <table class='pd-con' style='width:100%'>
-                    <tr class='pd-header-con'>
-                        <td class='pd-r-h-1 table-h'>Passenger name</td>
-                        <td class='pd-r-h-2 table-h'>Passport</td>
-                        <td class='pd-r-h-3 table-h'>Date of birth</td>
-                        <td class='pd-r-h-4 table-h'>Type</td>
-                    </tr>
-                    ${passengersinfo.map((element)=>{
-                    return  `<tr class='pd-body-con'>
-                                <td class='pd-r-b-1'>${element.firstname+' '+element.lastname}</td>
-                                <td class='pd-r-b-2'>${element.passport?element.passport:'-'}</td>
-                                <td class='pd-r-b-3'>${element.dateofbirth?element.dateofbirth:'-'}</td>
-                                <td class='pd-r-b-4'>${element.type?element.type:'-'}</td>
-                            </tr>`
-                    })}
-                </table>
-                <table class='fare-con' style='width:100%'>
-                    <tr class='fp-head'>
-                        <td class='fp-h-1'>Fare Details</td>
-                        <td class='fp-h-2'></td>
-                    </tr>
-                    ${tripFlights.map((element)=>{
-                        return `<tr class='fp-body'>
-                                    <td class='fp-b-1'>Total price</td>
-                                    <td class='fp-b-2'>${element.totalprice}</td>
-                                <tr>`
-                    })}
-                </table>
+const escapeHtml = (value) =>
+    String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+
+const fmt = (value, fallback = '-') => {
+    if (value === null || value === undefined || value === '') return fallback
+    return escapeHtml(value)
+}
+
+const routeMeta = (city, airport, code) => {
+    const cityText = String(city || '').trim()
+    const airportText = String(airport || '').trim()
+    const codeText = String(code || '').trim()
+    const primary = cityText || codeText || '-'
+    const secondary = airportText && airportText !== cityText && airportText !== codeText ? airportText : codeText
+    return secondary && secondary !== primary ? `${primary} · ${secondary}` : primary
+}
+
+const flightSection = (flight, title, dateValue, tripClass) => `
+    <div class="segment-card">
+        <div class="segment-head">
+            <div class="segment-title">${escapeHtml(title)}</div>
+            <div class="segment-date">${fmt(dateValue)}</div>
+        </div>
+        <div class="route-row">
+            <div class="route-node">
+                <div class="code">${fmt(flight.departurecode)}</div>
+                <div class="meta">${fmt(routeMeta(flight.departure, flight.departureairport, flight.departurecode))}</div>
+                <div class="time">${fmt(flight.departuretime)}</div>
+            </div>
+            <div class="route-arrow">→</div>
+            <div class="route-node">
+                <div class="code">${fmt(flight.destinationcode)}</div>
+                <div class="meta">${fmt(routeMeta(flight.destination, flight.destinationairport, flight.destinationcode))}</div>
+                <div class="time">${fmt(flight.destinationtime)}</div>
             </div>
         </div>
-       </body>
+        <div class="segment-footer">
+            <div class="segment-footer-row">
+              <span class="pill soft">Flight ${fmt(flight.flightnumber)}</span>
+              <span>${fmt(flight.flightname)}</span>
+            </div>
+            <div class="segment-footer-row">
+              <span class="pill soft">Class ${fmt(tripClass)}</span>
+              <span class="status-ok">Confirmed</span>
+            </div>
+        </div>
+    </div>
+`
+
+module.exports = ({ bookingid, passengersinfo = [], tripFlights = [] }) => {
+    const booking = Array.isArray(tripFlights) && tripFlights.length ? tripFlights[0] : {}
+    const today = new Date()
+    const issueDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+
+    const outbound = {
+        departure: booking.departure,
+        departureairport: booking.departureairport,
+        departurecode: booking.departurecode,
+        departuretime: booking.departuretime,
+        destination: booking.destination,
+        destinationairport: booking.destinationairport,
+        destinationcode: booking.destinationcode,
+        destinationtime: booking.destinationtime,
+        flightname: booking.flightname,
+        flightnumber: booking.flightnumber,
+    }
+
+    const hasReturn = booking.triptype === 'Return'
+    const inbound = hasReturn
+        ? {
+            departure: booking.rdeparture,
+            departureairport: booking.rdepartureairport,
+            departurecode: booking.rdeparturecode,
+            departuretime: booking.rdeparturetime,
+            destination: booking.rdestination,
+            destinationairport: booking.rdestinationairport,
+            destinationcode: booking.rdestinationcode,
+            destinationtime: booking.rdestinationtime,
+            flightname: booking.rflightname,
+            flightnumber: booking.rflightnumber,
+        }
+        : null
+
+    const passengerRows = (Array.isArray(passengersinfo) ? passengersinfo : []).map((p) => `
+        <tr>
+            <td>${fmt(`${p.firstname || ''} ${p.lastname || ''}`.trim())}</td>
+            <td>${fmt(p.passport)}</td>
+            <td>${fmt(p.dateofbirth)}</td>
+            <td>${fmt(p.type || 'Adult')}</td>
+            <td>${fmt(p.nationality)}</td>
+        </tr>
+    `).join('')
+
+    return `
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Eco Flights Booking Receipt</title>
+        <style>
+          * { box-sizing: border-box; }
+          body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            color: #1f334a;
+            background: #ffffff;
+          }
+          .sheet {
+            width: 100%;
+            border: 1px solid #d7e3ef;
+            border-radius: 12px;
+            overflow: hidden;
+          }
+          .header {
+            padding: 16px 18px 14px;
+            background: linear-gradient(90deg, #f4f8f4 0%, #eaf4e9 52%, #d9f0d2 100%);
+            border-bottom: 1px solid #d3dfec;
+          }
+          .brand-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+          }
+          .brand {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
+            color: #2a3d56;
+          }
+          .pill {
+            background: #2e8b57;
+            color: #fff;
+            border-radius: 999px;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 600;
+          }
+          .meta {
+            display: flex;
+            gap: 14px;
+            font-size: 12px;
+            color: #526882;
+            flex-wrap: wrap;
+            line-height: 1.35;
+          }
+          .meta span {
+            overflow-wrap: anywhere;
+          }
+          .content {
+            padding: 16px 18px;
+          }
+          .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2f455f;
+            margin: 0 0 8px;
+          }
+          .segment-card {
+            border: 1px solid #dce7f2;
+            border-radius: 10px;
+            background: #f9fcff;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+          }
+          .segment-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #5d738d;
+          }
+          .segment-title { font-weight: 700; color: #2f455f; }
+          .route-row {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+            margin-bottom: 8px;
+          }
+          .route-node, .route-arrow {
+            display: table-cell;
+            vertical-align: top;
+          }
+          .route-node { width: 47%; }
+          .route-arrow {
+            width: 6%;
+            text-align: center;
+            font-size: 17px;
+            color: #65809a;
+            font-weight: 700;
+          }
+          .code {
+            font-size: 16px;
+            font-weight: 700;
+            color: #24364e;
+            margin-bottom: 2px;
+          }
+          .meta, .segment-footer {
+            font-size: 11px;
+            color: #5d738d;
+          }
+          .time {
+            font-size: 13px;
+            font-weight: 600;
+            color: #31465f;
+            margin-top: 2px;
+          }
+          .segment-footer {
+            border-top: 1px solid #e1eaf4;
+            padding-top: 8px;
+            display: grid;
+            gap: 4px;
+          }
+          .segment-footer-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+          }
+          .pill.soft {
+            background: #edf4fb;
+            color: #36516f;
+            border-radius: 999px;
+            padding: 2px 8px;
+            font-size: 10px;
+            font-weight: 600;
+          }
+          .status-ok {
+            color: #1f7a47;
+            font-weight: 600;
+          }
+          .table-wrap {
+            border: 1px solid #dce7f2;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 12px;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          thead th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            color: #5f758e;
+            background: #f2f7fc;
+            padding: 8px 10px;
+            border-bottom: 1px solid #dfe9f3;
+          }
+          tbody td {
+            padding: 8px 10px;
+            font-size: 12px;
+            color: #334b64;
+            border-bottom: 1px solid #edf2f7;
+          }
+          tbody tr:last-child td { border-bottom: 0; }
+          .totals {
+            margin-top: 12px;
+            border: 1px solid #dce7f2;
+            border-radius: 10px;
+            padding: 10px 12px;
+            background: #fbfdff;
+          }
+          .totals-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 6px;
+            color: #435a74;
+            gap: 12px;
+          }
+          .totals-row.total {
+            margin: 0;
+            padding-top: 6px;
+            border-top: 1px solid #e2eaf3;
+            font-size: 14px;
+            font-weight: 700;
+            color: #253b55;
+          }
+          .totals-label {
+            flex: 1;
+          }
+          .totals-value {
+            text-align: right;
+            min-width: 110px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="sheet">
+          <div class="header">
+            <div class="brand-row">
+              <div class="brand">Eco Flights</div>
+              <div class="pill">E-Ticket Receipt</div>
+            </div>
+            <div class="meta">
+              <span>Booking ID: ${fmt(bookingid)}</span>
+              <span>Issue date: ${fmt(issueDate)}</span>
+              <span>Trip type: ${fmt(booking.triptype || 'One-way')}</span>
+            </div>
+          </div>
+
+          <div class="content">
+            <h2 class="section-title">Flight details</h2>
+            ${flightSection(outbound, 'Outbound flight', booking.departuredate, booking.tripclass)}
+            ${hasReturn ? flightSection(inbound, 'Inbound flight', booking.rdeparturedate, booking.tripclass) : ''}
+
+            <h2 class="section-title">Passenger details</h2>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Passenger</th>
+                    <th>Passport</th>
+                    <th>Date of birth</th>
+                    <th>Type</th>
+                    <th>Nationality</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${passengerRows || '<tr><td colspan="5">No passengers found</td></tr>'}
+                </tbody>
+              </table>
+            </div>
+
+            <h2 class="section-title">Payment summary</h2>
+            <div class="totals">
+              <div class="totals-row">
+                <span class="totals-label">Base fare</span>
+                <span class="totals-value">USD ${fmt(booking.totalprice || 0, '0')}</span>
+              </div>
+              <div class="totals-row total">
+                <span class="totals-label">Amount paid</span>
+                <span class="totals-value">USD ${fmt(booking.totalprice || 0, '0')}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </body>
     </html>
-    `;
-};
+  `
+}

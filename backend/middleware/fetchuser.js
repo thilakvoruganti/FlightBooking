@@ -1,5 +1,8 @@
 var jwt = require('jsonwebtoken')
-JWT_SECRET= "iqdxgwiDGiwdgiYWDG"
+const JWT_SECRET = process.env.JWT_SECRET
+if (!JWT_SECRET) {
+    throw new Error('JWT_SECRET is required')
+}
 
 const fetchuser = async (req,res,next) => {
     const token = req.header('auth-token');
@@ -16,5 +19,3 @@ const fetchuser = async (req,res,next) => {
 }
 
 module.exports = fetchuser
-
-

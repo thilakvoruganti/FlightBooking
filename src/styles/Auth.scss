@@ -1,81 +1,412 @@
-.lr-con{
-    --font-Jotia: Jotia,Verdana,Geneva,sans-serif;
-    font:normal normal normal 0.99vw/1.042vw var(--font-Jotia);
+.lr-con {
+  --font-Jotia: Jotia, Verdana, Geneva, sans-serif;
+  padding: 2rem 1rem 2.5rem;
+  display: flex;
+  justify-content: center;
+  font-family: var(--font-Jotia);
+}
+
+.lr-con > div {
+  width: min(100%, 68rem);
+}
+
+.lr-con.login-page > div {
+  width: 100%;
+  max-width: 640px;
+}
+
+.lr-con.login-page {
+  padding: 1.9rem 0.7rem 2rem;
+}
+
+.lr-f-title {
+  margin-bottom: 0.9rem;
+  color: #2c3d52;
+  font-size: clamp(1.6rem, 1.4rem + 1vw, 2.2rem);
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.lr-f-body {
+  background-color: #ffffff;
+  border: 1px solid #d8e2ee;
+  border-radius: 1rem;
+  padding: clamp(1rem, 1.5vw, 1.6rem);
+  box-shadow: 0 0.5rem 1.6rem rgba(43, 58, 79, 0.08);
+}
+
+.lr-con.login-page .lr-f-body {
+  padding: 2rem;
+  border-radius: 1.25rem;
+}
+
+.lr-con.login-page .lr-f-title {
+  margin-bottom: 1rem;
+}
+
+.lr-form-item {
+  margin-bottom: 0.9rem;
+}
+
+.lr-link-con {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.lr-link-btn {
+  color: #36516f;
+  text-decoration: none;
+  font-size: 0.92rem;
+}
+
+.lr-link-btn:hover {
+  text-decoration: underline;
+}
+
+.part-con {
+  display: grid;
+  grid-template-columns: minmax(12rem, 1fr) minmax(18rem, 2fr);
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e0e7f0;
+}
+
+.part-con:first-child {
+  padding-top: 0;
+}
+
+.part-con:last-of-type {
+  border-bottom: 0;
+}
+
+.part-con-title,
+.pd-con > div:first-child,
+.wliv-con > div:first-child {
+  color: #4a5d73;
+  font-size: 0.96rem;
+  font-weight: 500;
+}
+
+.radio-con {
+  height: auto;
+  min-height: 3.4rem;
+}
+
+.rc-title {
+  margin: 0 0 0.45rem;
+  color: #4a5d73;
+  font-size: 0.9rem;
+}
+
+.select-radio-con {
+  display: flex;
+  gap: 0.8rem;
+  margin-bottom: 0.7rem;
+}
+
+.select-radio {
+  min-height: auto;
+  margin: 0;
+  padding: 0;
+}
+
+.select-label {
+  margin-left: 0.35rem;
+  font-size: 0.92rem;
+  color: #2f435a;
+}
+
+.select-input {
+  margin: 0;
+}
+
+.form-check-input:checked {
+  background-color: #2e8b57;
+  border-color: #2e8b57;
+}
+
+.btn-con {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+/* Override global component widths for auth pages only. */
+.lr-con .input-com .input-primary,
+.lr-con .input-com .input-secondary,
+.lr-con .input-com .input-secondary-mr {
+  width: 100% !important;
+  height: 3.2rem !important;
+  padding: 1.15rem 0.75rem 0.4rem !important;
+  font-size: 0.98rem !important;
+  line-height: 1.2 !important;
+  margin-right: 0 !important;
+}
+
+.lr-con.login-page .input-com .input-primary {
+  height: 4rem !important;
+}
+
+.lr-con .input-com .input-label-primary {
+  padding: 0.95rem 0.75rem !important;
+  font-size: 0.86rem !important;
+  line-height: 1 !important;
+}
+
+.lr-con .dd-com .secondary {
+  width: 100% !important;
+  height: 3.2rem !important;
+  border-radius: 0.5rem !important;
+  border-color: #bccadb !important;
+  padding: 0.55rem 0.75rem !important;
+}
+
+.lr-con .dd-com .dd-menu-secondary {
+  width: 100% !important;
+  max-height: 16rem !important;
+  border-radius: 0.5rem !important;
+}
+
+.lr-con .btn-com-secondary {
+  width: min(100%, 20rem) !important;
+  height: 3rem !important;
+  border: 1px solid #2f935d !important;
+  border-radius: 0.6rem !important;
+  background: linear-gradient(140deg, #2e8b57 0%, #3da96f 100%) !important;
+  color: #fff !important;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+}
+
+.lr-con.login-page .btn-com-secondary {
+  width: 20rem !important;
+  height: 4rem !important;
+  border-radius: 0.75rem !important;
+}
+
+.lr-con .btn-com-secondary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.lr-form-item.d-flex,
+.cred-partition-con {
+  gap: 0.9rem;
+}
+
+@media (max-width: 991px) {
+  .lr-con.login-page > div {
+    max-width: 560px;
+  }
+
+  .lr-con.login-page .lr-f-body {
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+
+  .lr-con.login-page .input-com .input-primary {
+    height: 3.5rem !important;
+  }
+
+  .lr-con.login-page .btn-com-secondary {
+    width: 18rem !important;
+    height: 3.5rem !important;
+  }
+
+  .lr-con.login-page {
+    padding: 1.5rem 0.7rem 1.75rem;
+  }
+
+  .part-con {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+    padding: 0.85rem 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .lr-con {
+    padding: 1.2rem 0.75rem 1.7rem;
+  }
+
+  .lr-f-body {
+    padding: 0.9rem;
+    border-radius: 0.85rem;
+  }
+
+  .lr-form-item.d-flex,
+  .cred-partition-con,
+  .lr-link-con,
+  .select-radio-con {
     display: flex;
-    justify-content: center;
-    margin-top: 3.125vw;
-    margin-bottom: 3.125vw;
-    .lr-f-title{
-        margin-bottom: 1.042vw;
-        font:normal normal normal 1.99vw/2.042vw var(--font-Jotia);
-    }
-    .lr-f-body{
-        background-color: #fff;
-        padding: 3.125vw;
-        border-radius: 2.083vw;
-        .lr-form-item{
-            margin-bottom: 1.042vw;
-        }
-        .lr-link-con{
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            .lr-context{
-                font:normal normal normal 1.303vw/1.569vw var(--font-Jotia);
-                margin-bottom: 1.042vw;
-            }
-            .lr-link-btn{
-                font:normal normal normal 0.99vw/1.042vw var(--font-Jotia);
-                color: #212529;
-            }
-        }
-        .part-con{
-            display: flex;
-            justify-content: space-between;
-            padding-bottom: 1.042vw;
-            padding-top: 2.084vw;
-            border-bottom: 0.052vw solid #ccc;
-            .part-con-title{
-                width:24.652vw;
-            }
-        }
-        .radio-con{
-            height: 4.167vw;
-            .rc-title{
-                margin-top: 0.521vw;
-                margin-bottom: 0.521vw;
-            }
-        }
-        .select-radio-con{
-            display: flex;
-            margin-bottom: 1.042vw;
-            .select-radio{
-                // border: 0.052vw solid #ccc;
-                // border-radius: 0.26vw;
-                // padding: 1.042vw 1.042vw;
-                min-height:1.042vw;
-                padding: 0;
-                margin: 0;
-                margin-right: 0.521vw;
-                .select-input{
-                    margin: 0;
-                }
-                .select-label{
-                    margin-left: 0.521vw;
-                }
-                &:last-child{
-                    margin-right: 0;
-                }
-            }
-            .form-check-input:checked {
-                background-color: rgb(96,96,96);
-                border-color: rgb(96,96,96);
-            }
-        }
-        .btn-con{
-            display: flex;
-            justify-content: center;
-            margin-top: 2.083vw;
-        }
-    }
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.65rem;
+  }
+
+  .btn-con {
+    margin-top: 0.75rem;
+  }
+
+  .lr-con.login-page > div {
+    width: 100%;
+    max-width: 88vw;
+  }
+
+  .lr-con.login-page {
+    padding: 1.2rem 0.7rem 1.7rem;
+  }
+
+  .lr-con.login-page .lr-f-body {
+    padding: 1.1rem 0.95rem;
+    border-radius: 0.95rem;
+  }
+
+  .lr-con.login-page .btn-com-secondary {
+    width: 100% !important;
+    height: 3.3rem !important;
+  }
+
+  .lr-con.login-page .input-com .input-primary {
+    height: 3.3rem !important;
+  }
+
+  .lr-con.login-page .lr-f-title {
+    font-size: 2.15rem;
+    line-height: 1.08;
+    margin-bottom: 0.8rem;
+  }
+
+  .lr-con.login-page .lr-form-item {
+    margin-bottom: 0.55rem;
+  }
+
+.lr-con.login-page .lr-link-con {
+    gap: 0.35rem;
+    margin-top: 0.15rem;
+  }
+}
+
+/* Register-specific layout stabilization */
+.lr-con.register-page .part-con{
+  grid-template-columns: 1fr;
+  gap: 0.9rem;
+  padding: 1rem 0;
+}
+
+.lr-con.register-page .part-con-title,
+.lr-con.register-page .pd-con > div:first-child,
+.lr-con.register-page .wliv-con > div:first-child{
+  margin: 0;
+}
+
+.lr-con.register-page .part-con > div:last-child{
+  width: 100%;
+  display: grid;
+  row-gap: 0.9rem;
+}
+
+.lr-con.register-page .part-con > div:last-child > .lr-form-item{
+  margin-bottom: 0;
+}
+
+.lr-con.register-page .register-two-col-row{
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+  align-items: stretch;
+}
+
+.lr-con.register-page .register-two-col-row .lr-form-item{
+  margin-bottom: 0;
+}
+
+.lr-con.register-page .register-two-col-row .input-com{
+  width: 100%;
+}
+
+.lr-con.register-page .register-full-row{
+  display: block !important;
+  margin-bottom: 0;
+}
+
+.lr-con.register-page .register-gender-con{
+  min-height: 3.2rem;
+  border: 1px solid #cfd9e5;
+  border-radius: 0.5rem;
+  padding: 0.38rem 0.62rem 0.34rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.lr-con.register-page .register-gender-con .rc-title{
+  margin: 0 0 0.2rem;
+  font-size: 0.82rem;
+  line-height: 1;
+  color: #5a6b80;
+}
+
+.lr-con.register-page .register-gender-con .select-radio-con{
+  margin-bottom: 0;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.lr-con.register-page .register-gender-con .select-radio{
+  display: flex;
+  align-items: center;
+  min-height: 1.1rem;
+  margin: 0;
+  padding-left: 0;
+}
+
+.lr-con.register-page .register-gender-con .form-check-input{
+  float: none;
+  position: static;
+  margin: 0 0.35rem 0 0;
+}
+
+.lr-con.register-page .register-gender-con .select-label{
+  margin-left: 0;
+  line-height: 1;
+  font-size: 0.98rem;
+  color: #2f435a;
+}
+
+.lr-con.register-page .lr-f-body{
+  padding-top: 1.35rem;
+}
+
+.lr-con.register-page .lr-f-title{
+  margin-bottom: 1rem;
+}
+
+.lr-con.register-page .btn-con{
+  margin-top: 1rem;
+}
+
+
+@media (max-width: 991px){
+  .lr-con.register-page .register-two-col-row{
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 767px){
+  .lr-con.register-page .part-con > div:last-child{
+    row-gap: 0.65rem;
+  }
+
+  .lr-con.register-page .register-two-col-row{
+    gap: 0.65rem;
+  }
+
+  .lr-con.register-page .part-con{
+    gap: 0.7rem;
+    padding: 0.85rem 0;
+  }
 }

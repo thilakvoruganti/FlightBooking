@@ -16,6 +16,20 @@ const MyFlightSchema = new mongoose.Schema({
     totalprice:{
         type:Number,
     },
+    paymentStatus: {
+        type: String,
+        enum: ['unpaid', 'pending', 'paid', 'failed', 'canceled', 'expired'],
+        default: 'unpaid'
+    },
+    stripeSessionId: {
+        type: String,
+    },
+    stripePaymentIntentId: {
+        type: String,
+    },
+    paidAt: {
+        type: Date,
+    },
     flightname:{
         type:String,
         required: true

@@ -48,6 +48,37 @@ const flightSchema = new mongoose.Schema({
         type:String,
         required: true,
     },
+    departuredate:{
+        type:String,
+    },
+    destinationdate:{
+        type:String,
+    },
+    duration:{
+        type:String,
+    },
+    stops:{
+        type:Number,
+    },
+    distancekm:{
+        type:Number,
+    },
+    co2kg:{
+        type:Number,
+    },
+    ecolevel:{
+        type:String,
+    },
+    ecocomparison:{
+        type:String,
+    },
+    source:{
+        type:String,
+        default: 'manual',
+    },
+    lastsyncedat:{
+        type:Date,
+    },
 })
 
 

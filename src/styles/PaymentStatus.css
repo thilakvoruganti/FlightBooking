@@ -1,0 +1,58 @@
+.payment-status-page {
+  --font-Jotia: Jotia, Verdana, Geneva, sans-serif;
+  min-height: calc(100vh - 4rem);
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.payment-status-card {
+  width: min(100%, 42rem);
+  border: 1px solid #d7e2ee;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 0.5rem 1.4rem rgba(43, 58, 79, 0.08);
+  padding: clamp(1rem, 1.8vw, 1.6rem);
+  color: #2d3f54;
+  font-family: var(--font-Jotia);
+}
+
+.payment-status-title {
+  margin: 0 0 0.5rem;
+  font-size: clamp(1.35rem, 1.2rem + 0.7vw, 1.8rem);
+  font-weight: 600;
+}
+
+.payment-status-text {
+  margin: 0 0 0.65rem;
+  color: #4b6076;
+}
+
+.payment-status-meta {
+  margin: 0 0 1rem;
+  color: #5f748a;
+  font-size: 0.92rem;
+}
+
+.payment-status-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.payment-status-btn {
+  text-decoration: none;
+  border: 1px solid #2f935d;
+  background: linear-gradient(140deg, #2e8b57 0%, #3da96f 100%);
+  color: #fff;
+  border-radius: 0.55rem;
+  padding: 0.62rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.payment-status-btn.secondary {
+  border-color: #bccad9;
+  background: #f4f8fc;
+  color: #33495f;
+}

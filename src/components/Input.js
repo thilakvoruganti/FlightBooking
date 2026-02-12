@@ -4,7 +4,7 @@ import Alert from './Alert'
 import { useFlight } from '../context/Flight'
 
 
-const Input = ({className,placeholder,onChange, value, type, name, id, validation, alertmsg}) => {
+const Input = ({className,placeholder,onChange, value, type, name, id, validation, alertmsg, skipBlurValidation = false}) => {
 
     const {alert, setAlert, invalid, setInvalid} = useFlight()
 
@@ -20,10 +20,11 @@ const Input = ({className,placeholder,onChange, value, type, name, id, validatio
                     type={type}
                     name={name}
                     id={id}
-                    onBlur={() => {
-                            if(name !== 'cpassword'){
+                    onBlur={(e) => {
+                            if(name !== 'cpassword' && !skipBlurValidation){
                                 var pattern = new RegExp(validation);
-                                let regex = pattern.test(value)
+                                const currentValue = e.target.value
+                                let regex = pattern.test(currentValue)
                                 setAlert({...alert,[name]:regex})
                                 setInvalid({...invalid,[name]:regex ? '' : 'is-invalid'})
                             }

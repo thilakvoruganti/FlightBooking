@@ -20,8 +20,10 @@ const Confirmationpage = () => {
             const {data} = await axios.get(`/getpassofbook?_id=${localStorage.getItem('BookingID')}`)
             const bpdata = data
             if(bpdata.success){
-                createPdf(localStorage.getItem('BookingID'),bpdata.passenger, pbdata.flights)
-                .then(()=> getPdf())
+                const pdfResponse = await createPdf(localStorage.getItem('BookingID'), bpdata.passenger, pbdata.flights)
+                if (pdfResponse?.success) {
+                  await getPdf(pdfResponse.fileName)
+                }
             }
     }
   }

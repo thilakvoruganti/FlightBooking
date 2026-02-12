@@ -8,9 +8,16 @@ const userRouter = require('./routes/user')
 const myflightrouter = require('./routes/myflight')
 const passengerRouter = require('./routes/passenger')
 const pdfRouter = require('./routes/pdf')
+const paymentRouter = require('./routes/payment')
+const { handleStripeWebhook } = require('./controllers/payment')
 const bodyParser = require('body-parser');
 
-MONGO_URI= "mongodb+srv://thilak:lakthi@api.8hmns4c.mongodb.net/?retryWrites=true&w=majority"
+const MONGO_URI = process.env.MONGO_URI
+if (!MONGO_URI) {
+    throw new Error('MONGO_URI is required')
+}
+
+app.post('/api/v1/payments/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook)
 
 app.use(express.json())
 app.use(cors())
@@ -24,9 +31,10 @@ app.use('/api/v1',userRouter)
 app.use('/api/v1',myflightrouter)
 app.use('/api/v1',passengerRouter)
 app.use('/api/v1',pdfRouter)
+app.use('/api/v1',paymentRouter)
 
 
-const port = 4000
+const port = process.env.PORT || 4000
 
 const start = async () => {
     try {
@@ -38,4 +46,3 @@ const start = async () => {
 }
 
 start()
-

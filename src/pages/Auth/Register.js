@@ -1,10 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate, } from 'react-router-dom'
 import "../../styles/Auth.css";
 import Alert from '../../components/Alert';
 import Input from '../../components/Input';
 import Dropdown from '../../components/Dropdown'
-import Button from '../../components/Button'
 import { useAuth } from '../../context/Auth'
 import { useFlight } from '../../context/Flight'
 
@@ -14,7 +13,7 @@ const Register = () => {
         "remail": "",
         "rpassword": "",
         "rcpassword": "",
-        "rcountrycode": "+91",
+        "rcountrycode": "+1",
         "rmobilenumber": "",
         "rfirstname": "",
         "rlastname": "",
@@ -24,58 +23,121 @@ const Register = () => {
     })
 
     const States = [
-        "Andhra Pradesh",
-        "Arunachal Pradesh",
-        "Assam",
-        "Bihar",
-        "Chatthisgarh",
-        "Goa",
-        "Gujarat",
-        "Haryana",
-        "Himachal Pradesh",
-        "Jharkhand",
-        "Karnataka",
-        "Kerala",
-        "Madhya Pradesh",
-        "Maharashtra",
-        "Manipur",
-        "Meghalaya",
-        "Mizoram",
-        "Nagaland",
-        "Odisha",
-        "Punjab",
-        "Rajasthan",
-        "Sikkim",
-        "Tamil Nadu",
-        "Telangana",
-        "Tripura",
-        "West Bengal",
-        "Uttarakhand",
-        "Uttar Pradesh"
+        "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
+        "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+        "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan",
+        "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
+        "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina",
+        "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
+        "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
+        "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming", "District of Columbia"
     ]
 
     const {auth, setAuth } = useAuth()
 
     const { alert, setAlert, invalid, setInvalid} = useFlight()
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [serverError, setServerError] = useState('')
+
+    useEffect(() => {
+        setAlert((prev) => ({
+            ...prev,
+            remail: true,
+            rpassword: true,
+            rcpassword: true,
+            rmobilenumber: true,
+            rfirstname: true,
+            rlastname: true,
+            rdateofbirth: true,
+            rgender: true,
+            rstate: true,
+        }))
+        setInvalid((prev) => ({
+            ...prev,
+            remail: '',
+            rpassword: '',
+            rcpassword: '',
+            rmobilenumber: '',
+            rfirstname: '',
+            rlastname: '',
+            rdateofbirth: '',
+            rgender: '',
+            rstate: '',
+        }))
+    }, [setAlert, setInvalid])
 
     const onChangelogin = (e) => {
+        if (serverError) setServerError('')
         setCredentials({ ...credentials, [e.target.name]: e.target.value })
     }
     const handleRadio = (e) => {
+        if (serverError) setServerError('')
         setCredentials({ ...credentials, 'rgender': e.target.value })
     }
     const selectState = (e) => {
-        setCredentials({ ...credentials, "state": e.target.getAttribute('data-value') })
+        if (serverError) setServerError('')
+        setCredentials({ ...credentials, "rstate": e.target.getAttribute('data-value') })
+    }
+
+    const parseDobInput = (dobValue) => {
+        if (!dobValue) return null
+
+        // Accept both browser date value (YYYY-MM-DD) and typed US date (MM/DD/YYYY).
+        const isoMatch = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(dobValue)
+        if (isoMatch) {
+            const year = Number(isoMatch[1])
+            const month = Number(isoMatch[2])
+            const day = Number(isoMatch[3])
+            const dob = new Date(year, month - 1, day)
+            if (
+                dob.getFullYear() === year &&
+                dob.getMonth() === month - 1 &&
+                dob.getDate() === day
+            ) {
+                return dob
+            }
+            return null
+        }
+
+        const usMatch = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(dobValue)
+        if (usMatch) {
+            const month = Number(usMatch[1])
+            const day = Number(usMatch[2])
+            const year = Number(usMatch[3])
+            const dob = new Date(year, month - 1, day)
+            if (
+                dob.getFullYear() === year &&
+                dob.getMonth() === month - 1 &&
+                dob.getDate() === day
+            ) {
+                return dob
+            }
+        }
+
+        return null
+    }
+
+    const formatDobIso = (dobDate) => {
+        const yyyy = dobDate.getFullYear()
+        const mm = String(dobDate.getMonth() + 1).padStart(2, '0')
+        const dd = String(dobDate.getDate()).padStart(2, '0')
+        return `${yyyy}-${mm}-${dd}`
     }
 
     const validationCheck = () => {
-        let emailv = /@/.test(credentials.remail)
-        let pwdv = /^[a-zA-Z0-9]{1,}$/.test(credentials.rpassword)
+        let emailv = /^\S+@\S+\.\S+$/.test(credentials.remail.trim())
+        let pwdv = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,64}$/.test(credentials.rpassword)
         let cpwdv = credentials.rpassword === credentials.rcpassword ? true : false
-        let mbv = /^[0-9]{10,}$/.test(credentials.rmobilenumber)
-        let fnamev = /^[a-zA-Z]{1,}$/.test(credentials.rfirstname)
-        let lnamev = /^[a-zA-Z]{1,}$/.test(credentials.rlastname)
-        let dobv = /\d{1,}/g.test(credentials.rdateofbirth)
+        let mbv = /^[0-9]{10}$/.test(credentials.rmobilenumber)
+        let fnamev = /^[A-Za-z][A-Za-z\s'-]{1,49}$/.test(credentials.rfirstname.trim())
+        let lnamev = /^[A-Za-z][A-Za-z\s'-]{1,49}$/.test(credentials.rlastname.trim())
+        const dob = parseDobInput(credentials.rdateofbirth)
+        const today = new Date()
+        const validDobDate = dob && dob <= today
+        const age = validDobDate ? today.getFullYear() - dob.getFullYear() - (
+            today < new Date(today.getFullYear(), dob.getMonth(), dob.getDate()) ? 1 : 0
+        ) : -1
+        let dobv = validDobDate && age >= 13 && age <= 100
         let genderv = /^[a-zA-Z]{1,}$/.test(credentials.rgender)
         let statev = credentials.rstate !== 'Select State' ? true : false
 
@@ -88,8 +150,8 @@ const Register = () => {
             "rfirstname": fnamev,
             "rlastname": lnamev,
             "rdateofbirth": dobv,
-            "gender": genderv,
-            "state": statev
+            "rgender": genderv,
+            "rstate": statev
         })
         setInvalid({
             ...invalid, 'remail': emailv ? '' : 'is-invalid',
@@ -102,7 +164,7 @@ const Register = () => {
             'rgender': genderv ? '' : 'is-invalid',
             'rstate': statev ? '' : 'is-invalid'
         })
-        if (emailv && pwdv && cpwdv && mbv && fnamev && lnamev && dobv && genderv) {
+        if (emailv && pwdv && cpwdv && mbv && fnamev && lnamev && dobv && genderv && statev) {
             return true
         }
         else {
@@ -112,55 +174,49 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        if (isSubmitting) return
+        setServerError('')
         var validation = validationCheck()
         if (validation) {
-            console.log(credentials)
-            const response = await fetch("http://localhost:4000/api/v1/auth", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: credentials.remail,
-                    password: credentials.rpassword,
-                    countrycode: credentials.rcountrycode,
-                    mobilenumber: credentials.rmobilenumber,
-                    firstname: credentials.rfirstname,
-                    lastname: credentials.rlastname,
-                    dateofbirth: credentials.rdateofbirth,
-                    gender: credentials.rgender,
-                    state: credentials.rstate
+            setIsSubmitting(true)
+            try {
+                const response = await fetch("http://localhost:4000/api/v1/auth", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: credentials.remail.trim(),
+                        password: credentials.rpassword,
+                        countrycode: credentials.rcountrycode,
+                        mobilenumber: credentials.rmobilenumber,
+                        firstname: credentials.rfirstname.trim(),
+                        lastname: credentials.rlastname.trim(),
+                        dateofbirth: formatDobIso(parseDobInput(credentials.rdateofbirth)),
+                        gender: credentials.rgender,
+                        state: credentials.rstate
+                    })
                 })
-            })
-            const data = await response.json()
-            if (data.success) {
-                localStorage.setItem('auth',JSON.stringify(data));
-                setAuth({...auth,user:data.user,token:data.token})
-                // const data = await fetch("http://localhost:4000/api/v1/auth/createpassenger", {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //         'auth-token': localStorage.getItem('token')
-                //     },
-                //     body: JSON.stringify({
-                //         firstname: credentials.rfirstname,
-                //         lastname: credentials.rlastname,
-                //         dateofbirth: credentials.rdateofbirth,
-                //         gender: credentials.rgender,
-                //         state: credentials.rstate
-                //     })
-                // })
-                // const passenger = await data.json()
-                // console.log(passenger)
-                navigate('/');
+                const data = await response.json()
+                if (data.success) {
+                    localStorage.setItem('auth',JSON.stringify(data));
+                    setAuth({...auth,user:data.user,token:data.token})
+                    navigate('/');
+                } else {
+                    setServerError(data?.message || data?.error || 'Unable to create account.')
+                }
+            } catch (error) {
+                setServerError('Unable to reach server. Please try again.')
+            } finally {
+                setIsSubmitting(false)
             }
         }
     }
     return (
-        <div className='lr-con'>
+        <div className='lr-con register-page'>
             <div>
-                <div className='lr-f-title'>Register</div>
                 <div className='lr-f-body'>
+                    <div className='lr-f-title'>Register</div>
                     <form className='lr-form' onSubmit={handleSubmit}>
                         <div className='part-con'>
                             <div className='part-con-title'>Let's create your credentials</div>
@@ -171,14 +227,14 @@ const Register = () => {
                                         placeholder='Enter your email address'
                                         onChange={onChangelogin}
                                         value={credentials.remail}
-                                        type="text"
+                                        type="email"
                                         name="remail"
                                         id="remail"
                                         validation="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"
                                         alertmsg="Enter a valid email"
                                     />
                                 </div>
-                                <div className='lr-form-item d-flex'>
+                                <div className='lr-form-item d-flex register-two-col-row'>
                                     <Input
                                         className="secondary-mr"
                                         placeholder='Enter your password'
@@ -187,8 +243,8 @@ const Register = () => {
                                         type="password"
                                         name="rpassword"
                                         id="rpassword"
-                                        validation="^[a-zA-Z0-9@*_-]{1,}$"
-                                        alertmsg="Enter a valid password"
+                                        validation="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,64}$"
+                                        alertmsg="Use 8+ chars with upper, lower, number, and special character"
                                     />
                                     <Input
                                         className="secondary"
@@ -198,11 +254,11 @@ const Register = () => {
                                         type="password"
                                         name="rcpassword"
                                         id="rcpassword"
-                                        validation="^[a-zA-Z0-9@*_-]{1,}$"
-                                        alertmsg="password and confirm password does not match"
+                                        validation="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,64}$"
+                                        alertmsg="Password and confirm password should match"
                                     />
                                 </div>
-                                <div className='d-flex'>
+                                <div className='d-flex register-full-row'>
                                     {/* <div className="form-floating">
                                         <input className={`lr-mutli-input-mr form-control`}
                                             placeholder='countrycode'
@@ -215,15 +271,15 @@ const Register = () => {
                                         <label className='cd-innput-label' htmlFor="countrycode">Country code</label>
                                     </div> */}
                                     <Input
-                                        className="secondary"
+                                        className="primary"
                                         placeholder='Mobile number'
                                         onChange={onChangelogin}
                                         value={credentials.rmobilenumber}
                                         type="text"
                                         name="rmobilenumber"
                                         id="rmobilenumber"
-                                        validation="^[0-9]{10,}$"
-                                        alertmsg="Mobile number should be 10 characters long"
+                                        validation="^[0-9]{10}$"
+                                        alertmsg="US mobile number should be 10 digits"
                                     />
                                 </div>
                             </div>
@@ -231,7 +287,7 @@ const Register = () => {
                         <div className='pd-con part-con'>
                             <div>Your personal details</div>
                             <div>
-                                <div className=' cred-partition-con d-flex'>
+                                <div className='cred-partition-con d-flex register-two-col-row'>
                                     <div className='lr-form-item'>
                                         <Input
                                             className="secondary-mr"
@@ -241,7 +297,7 @@ const Register = () => {
                                             type="text"
                                             name="rfirstname"
                                             id="rfirstname"
-                                            validation="^[a-zA-Z]{1,}$"
+                                            validation="^[A-Za-z][A-Za-z '-]{1,49}$"
                                             alertmsg="Enter a valid first name"
                                         />
                                     </div>
@@ -254,12 +310,12 @@ const Register = () => {
                                             type="text"
                                             name="rlastname"
                                             id="rlastname"
-                                            validation="^[a-zA-Z]{1,}$"
+                                            validation="^[A-Za-z][A-Za-z '-]{1,49}$"
                                             alertmsg="Enter a valid last name"
                                         />
                                     </div>
                                 </div>
-                                <div className='d-flex'>
+                                <div className='d-flex register-two-col-row'>
                                     <Input
                                         className="secondary-mr"
                                         placeholder='Date of birth'
@@ -268,11 +324,11 @@ const Register = () => {
                                         type="date"
                                         name="rdateofbirth"
                                         id="rdateofbirth"
-                                        validation="\d{1,}"
-                                        alertmsg="Enter a valid date of birth"
+                                        validation="^((19|20)\\d{2}-(0?[1-9]|1[0-2])-(0?[1-9]|[12]\\d|3[01])|((0?[1-9]|1[0-2])\\/(0?[1-9]|[12]\\d|3[01])\\/(19|20)\\d{2}))$"
+                                        alertmsg="Enter a valid DOB (13+ years)"
                                     />
-                                    <div className='radio-con'>
-                                        <div className='rc-title'>Gender (Optional)</div>
+                                    <div className='radio-con register-gender-con'>
+                                        <div className='rc-title'>Gender</div>
                                         <div className='select-radio-con'>
                                             <div className={`form-check select-radio`}>
                                                 <input className={`form-check-input select-input  ${invalid.rgender} `}
@@ -314,7 +370,7 @@ const Register = () => {
                                                 </label>
                                             </div>
                                         </div>
-                                        {alert.gender === false ? <Alert error={"Please select a gender"} /> : <></>}
+                                        {alert.rgender === false ? <Alert error={"Please select a gender"} /> : <></>}
                                     </div>
                                 </div>
                             </div>
@@ -329,12 +385,19 @@ const Register = () => {
                                     options={States}
                                     defaultOption='Select State'
                                 />
-                                {alert.state === false ? <Alert error={"Please select your state you live in"} /> : <></>}
+                                {alert.rstate === false ? <Alert error={"Please select your state you live in"} /> : <></>}
                             </div>
                         </div>
                         <div className='btn-con'>
-                            <Button type="secondary">Create an account</Button>
+                            <button className='btn-com btn-com-secondary' disabled={isSubmitting}>
+                                {isSubmitting ? 'Creating account...' : 'Create an account'}
+                            </button>
                         </div>
+                        {serverError ? (
+                            <div className='justify-content-center d-flex'>
+                                <Alert error={serverError} />
+                            </div>
+                        ) : null}
                     </form>
                 </div>
             </div>
@@ -343,5 +406,3 @@ const Register = () => {
 }
 
 export default Register
-
-

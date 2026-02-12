@@ -1,21 +1,30 @@
 .alert-con {
   --font-Jotia: Jotia,Verdana,Geneva,sans-serif;
-  font: normal normal normal 0.99vw/1.042vw var(--font-Jotia);
+  font: normal normal 500 0.84rem/1.2 var(--font-Jotia);
   justify-content: center;
   color: #b50000;
-  border-radius: 0.26vw;
-  margin-top: 0.521vw;
-  margin-bottom: 1.042vw;
+  border-radius: 0.26rem;
+  margin-top: 0.38rem;
+  margin-bottom: 0.68rem;
 }
 
-.primary {
-  width: 30.652vw;
+.alert-con.primary {
+  width: 100%;
 }
 
-.primary-mr {
-  width: 30.652vw;
+.alert-con.primary-mr {
+  width: 100%;
 }
 
-.secondary {
-  width: 14.805vw;
+.alert-con.secondary {
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  .alert-con {
+    font-size: 0.76rem;
+    line-height: 1.15;
+    margin-top: 0.3rem;
+    margin-bottom: 0.56rem;
+  }
 }/*# sourceMappingURL=Alert.css.map */

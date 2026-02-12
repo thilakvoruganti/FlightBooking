@@ -13,45 +13,48 @@ const FlightProvider = (props) => {
   axios.defaults.baseURL = "http://localhost:4000/api/v1"
   axios.defaults.headers.common['auth-token'] = auth?.token
 
-  const Airports = [
+  const defaultAirports = [
     {
-      "name": "Kempegowda International Airport",
-      "city": "Bengaluru",
-      "id": "BLR",
-      "country": "India"
+      "name": "John F. Kennedy International Airport",
+      "city": "New York",
+      "id": "JFK",
+      "country": "United States"
     },
     {
-      "name": "Chennai International Airport",
-      "city": "Chennai",
-      "id": "CHE",
-      "country": "India"
+      "name": "Los Angeles International Airport",
+      "city": "Los Angeles",
+      "id": "LAX",
+      "country": "United States"
     },
     {
-      "name": "Indira Gandhi International Airport",
-      "city": "Delhi",
-      "id": "DEL",
-      "country": "India"
+      "name": "San Francisco International Airport",
+      "city": "San Francisco",
+      "id": "SFO",
+      "country": "United States"
     },
     {
-      "name": "Rajiv Gandhi International Airport",
-      "city": "Hyderabad",
-      "id": "HYD",
-      "country": "India"
+      "name": "O'Hare International Airport",
+      "city": "Chicago",
+      "id": "ORD",
+      "country": "United States"
     },
     {
-      "name": "Netaji Subhash Chandra Bose International Airport",
-      "city": "Kolkata",
-      "id": "CCU",
-      "country": "India"
+      "name": "Hartsfield-Jackson Atlanta International Airport",
+      "city": "Atlanta",
+      "id": "ATL",
+      "country": "United States"
     },
     {
-      "name": "Chattrapati Shivaji Maharaj International Airport",
-      "city": "Mumbai",
-      "id": "BOM",
-      "country": "India"
+      "name": "Dallas/Fort Worth International Airport",
+      "city": "Dallas",
+      "id": "DFW",
+      "country": "United States"
     }
 
   ]
+  const [Airports, setAirports] = useState([])
+  const [airportsLoading, setAirportsLoading] = useState(false)
+  const [airportsLoaded, setAirportsLoaded] = useState(false)
   // Home
   //  const [search,setSearch] = useState('')
   //  const [pdinitial,setPdInitial] = useState([{}])
@@ -107,6 +110,58 @@ const FlightProvider = (props) => {
   const [localpassengers, setLocalPassengers] = useState([])
   const [alert, setAlert] = useState({})
   const [invalid, setInvalid] = useState({})
+
+  const ensureAirportsLoaded = async () => {
+    if (airportsLoaded || airportsLoading) {
+      return Airports.length ? Airports : defaultAirports
+    }
+
+    setAirportsLoading(true)
+    try {
+      const { data } = await axios.get('/airports')
+      if (data?.success && Array.isArray(data.airports) && data.airports.length > 0) {
+        setAirports(data.airports)
+        setAirportsLoaded(true)
+        return data.airports
+      }
+      setAirports(defaultAirports)
+      setAirportsLoaded(true)
+      return defaultAirports
+    } catch (error) {
+      setAirports(defaultAirports)
+      setAirportsLoaded(true)
+      return defaultAirports
+    } finally {
+      setAirportsLoading(false)
+    }
+  }
+
+  const searchAirports = async (query) => {
+    const trimmedQuery = String(query || '').trim()
+    if (!trimmedQuery) {
+      if (!airportsLoaded && !airportsLoading) {
+        await ensureAirportsLoaded()
+      }
+      return Airports.length ? Airports : defaultAirports
+    }
+
+    try {
+      const { data } = await axios.get(`/airports?q=${encodeURIComponent(trimmedQuery)}&max=100`)
+      if (data?.success && Array.isArray(data.airports)) {
+        return data.airports
+      }
+    } catch (error) {
+      // Ignore API errors and fallback to local options.
+    }
+
+    const normalizedQuery = trimmedQuery.toLowerCase()
+    const source = Airports.length ? Airports : defaultAirports
+    return source.filter((airport) =>
+      [airport.city, airport.name, airport.id].some((field) =>
+        String(field || '').toLowerCase().includes(normalizedQuery)
+      )
+    )
+  }
 
   const createLocalPassengers = (data) => {
     var passdataarray = []
@@ -165,41 +220,46 @@ const FlightProvider = (props) => {
     setLocalPassengers(passdataarray)
   }
 
-  const createPdf = async(bookingid,passengersinfo,tripFlights ) => {
-    const createpdf = await axios.post(`/createpdf`,{
-                bookingid:bookingid,
-                passengersinfo:passengersinfo,
-                tripFlights:tripFlights
-      })
-      const pdf = createpdf.json
-      return  pdf
-}
-const getPdf = async() => {
-    const {data} = await axios.get(`/getpdf`)
-      return data.blob().then((myBlob)=>{
-        const pdfBlob = new Blob([myBlob], { type: 'application/pdf' });
-        saveAs(pdfBlob, 'newPdf.pdf');
-      })
-}
+  const createPdf = async (bookingid, passengersinfo, tripFlights) => {
+    const { data } = await axios.post(`/createpdf`, {
+      bookingid,
+      passengersinfo,
+      tripFlights,
+    })
+    return data
+  }
+  const getPdf = async (fileName = '') => {
+    const url = fileName ? `/getpdf?file=${encodeURIComponent(fileName)}` : '/getpdf'
+    const { data } = await axios.get(url, { responseType: 'blob' })
+    const pdfBlob = new Blob([data], { type: 'application/pdf' })
+    const normalizedName = fileName && String(fileName).endsWith('.pdf') ? fileName : 'eco-flights-ticket.pdf'
+    saveAs(pdfBlob, normalizedName)
+  }
 
 
 
 
   useEffect(() => {
+    // Prefetch popular airports in the background so dropdowns feel instant.
+    ensureAirportsLoaded()
 
     var data = JSON.parse(localStorage.getItem('searchedData'))
     if (data) {
-      if (data[2].tripValue === 'One-way') {
-        let startDate = moment(data[3].owdate)
-        let rep = { ...data[3], owdate: startDate }
-        setSearchFlights([...data.slice(0, 3), rep, ...data.slice(4, data.length + 1)])
+      const normalizedOneWay = {
+        ...(data[3] || {}),
+        owdate: toMomentOrNull(data?.[3]?.owdate),
       }
-      if (data[2].tripValue === 'Return') {
-        let startDate = moment(data[4].rtndate.startDate)
-        let endDate = moment(data[4].rtndate.endDate)
-        let rep = { ...data[4], rtndate: { startDate, endDate } }
-        setSearchFlights([...data.slice(0, 4), rep, ...data.slice(5, data.length + 1)])
+      const normalizedReturn = {
+        ...(data[4] || {}),
+        rtndate: {
+          startDate: toMomentOrNull(data?.[4]?.rtndate?.startDate),
+          endDate: toMomentOrNull(data?.[4]?.rtndate?.endDate),
+        },
       }
+      const normalizedData = [...data]
+      normalizedData[3] = normalizedOneWay
+      normalizedData[4] = normalizedReturn
+      setSearchFlights(normalizedData)
     }
     var flightdata = JSON.parse(localStorage.getItem('tripFlights'))
     if (flightdata) {
@@ -221,7 +281,7 @@ const getPdf = async() => {
     <FlightContent.Provider value={{
       Airports, searchflights, updateSearchFlights, tripFlights, setTripFlights,
       alert, setAlert, invalid, setInvalid, localpassengers, setLocalPassengers, createLocalPassengers,
-      createPdf, getPdf
+      createPdf, getPdf, searchAirports, ensureAirportsLoaded, airportsLoading
     }}>
       {props.children}
     </FlightContent.Provider>
@@ -231,3 +291,9 @@ const getPdf = async() => {
 const useFlight = () => useContext(FlightContent)
 
 export { useFlight, FlightProvider }
+  const toMomentOrNull = (value) => {
+    if (!value) return null
+    if (moment.isMoment(value)) return value
+    const parsed = moment(value)
+    return parsed.isValid() ? parsed : null
+  }

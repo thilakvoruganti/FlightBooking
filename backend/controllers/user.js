@@ -1,7 +1,10 @@
 const User = require('../models/User')
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
-JWT_SECRET= "iqdxgwiDGiwdgiYWDG"
+const JWT_SECRET = process.env.JWT_SECRET
+if (!JWT_SECRET) {
+    throw new Error('JWT_SECRET is required')
+}
 const getUsers = async (req,res) => {
     try {
         const users = await User.find({})

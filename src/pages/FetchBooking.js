@@ -8,7 +8,7 @@ import { useFlight } from '../context/Flight'
 
 
 const FetchBooking = () => {
-    const content = useContext(flightContent)
+    useContext(flightContent)
 
     const { createPdf, getPdf } = useFlight()
 
@@ -40,8 +40,10 @@ const FetchBooking = () => {
             const bpdata = data
             console.log(bpdata)
             if (bpdata.success) {
-                createPdf(bid, bpdata.passenger, pbdata.flights)
-                    .then(() => getPdf())
+                const pdfResponse = await createPdf(bid, bpdata.passenger, pbdata.flights)
+                if (pdfResponse?.success) {
+                    await getPdf(pdfResponse.fileName)
+                }
             }
         }
     }
@@ -52,7 +54,7 @@ const FetchBooking = () => {
                 <div className='ff-title'>Booking Details</div>
                 <div>
                     {fetchbooking.map((element) => {
-                        return <>
+                        return <React.Fragment key={element._id}>
                             <div className='ff-body-con'>
                                 <div className='ff-bl-con'>
                                     <div className='bf-con'>
@@ -89,7 +91,7 @@ const FetchBooking = () => {
                                             <div className='ff-bc-item'>
                                                 <div className='bf-con-head'>
                                                     <div className='d-flex justify-content-between'>
-                                                        <div className='ffc-m-item'>Outbound flight</div>
+                                                        <div className='ffc-m-item'>Inbound flight</div>
                                                         <div className='ffc-m-item'>{element.rdeparturedate}</div>
                                                     </div>
                                                     <div className='ffc-m-b-item'>{element.rflightname} {element.rflightnumber}</div>
@@ -128,14 +130,14 @@ const FetchBooking = () => {
                                             <div className='ffc-s-item '>EMAIL</div>
                                         </div>
                                         {fetchpassenger.map((element) => {
-                                            return <>
+                                            return <React.Fragment key={`${element._id || element.passport}-${element.firstname}`}>
                                                 <div className='d-g'>
                                                     <div>{element.firstname} {element.lastname}</div>
                                                     <div className=''>Adult</div>
                                                     <div>{element.mobilenumber ? element.mobilenumber : '-'}</div>
                                                     <div>{element.email ? element.email : '-'}</div>
                                                 </div>
-                                            </>
+                                            </React.Fragment>
                                         })
                                         }
                                     </div>
@@ -159,7 +161,7 @@ const FetchBooking = () => {
                                         </div>
                                         <div className='bs-con-div'>
                                             <div className='ffc-s-item'>CLASS</div>
-                                            <div className='ffc-m-item'>Econmoy</div>
+                                            <div className='ffc-m-item'>{element.tripclass || 'Economy'}</div>
                                         </div>
                                         <div className='bs-con-div'>
                                             <div className='ffc-s-item'>BOOKING STATUS</div>
@@ -174,7 +176,7 @@ const FetchBooking = () => {
                                     </div>
                                 </div>
                             </div>
-                        </>
+                        </React.Fragment>
                     }
                     )
                     }

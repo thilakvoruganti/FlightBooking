@@ -1,11 +1,10 @@
-import React, { useState, useContext, useEffect } from "react";
-// import flightContent from "../context/FlightContext";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import 'react-dates/initialize';
 import { DateRangePicker, SingleDatePicker } from 'react-dates';
 import 'react-dates/lib/css/_datepicker.css';
 import "../styles/Home.css";
-import Mutlialert from "./Mutlialert";
+import * as moment from 'moment';
 
 import { useFlight } from '../context/Flight'
 import FilterDropdown from "../components/FilterDropdown";
@@ -13,20 +12,31 @@ import Button from "../components/Button";
 
 const Home = () => {
 
-  var navigate = useNavigate()
+  const navigate = useNavigate()
 
 
-  const { Airports, searchflights, updateSearchFlights, createLocalPassengers, localpassengers } = useFlight()
+  const {
+    Airports,
+    searchflights,
+    updateSearchFlights,
+    createLocalPassengers,
+    searchAirports,
+    ensureAirportsLoaded,
+    airportsLoading
+  } = useFlight()
 
-  const [multialert, setMultiAlert] = useState({
-    departurealert: '',
-    arrivalalert: '',
-    success: false
-  })
+  const [validationMessage, setValidationMessage] = useState('')
 
 
 
   const [focus, setFocus] = useState(null);
+
+  const safeMomentOrNull = (value) => {
+    if (!value) return null
+    if (moment.isMoment(value)) return value
+    const parsed = moment(value)
+    return parsed.isValid() ? parsed : null
+  }
 
 
   const onChangeDeparture = (element) => {
@@ -45,26 +55,31 @@ const Home = () => {
       'arrivaldisplay': element.city + ' ' + element.id
     })
   }
-  const onDateChange = async (element) => {
-    var date = new Date(JSON.stringify(element).slice(1, 11))
-    var tostring = date.toDateString()
-    var stringdate = tostring.split(' ')
-    updateSearchFlights(3, { ...searchflights[3], 'owdate': element, 'departuredate': stringdate[0] + ', ' + stringdate[1] + ' ' + stringdate[2] })
+  const onDateChange = (element) => {
+    const formattedDate = element && typeof element.format === 'function'
+      ? element.format('ddd, MMM DD')
+      : null
+    updateSearchFlights(3, {
+      ...searchflights[3],
+      owdate: element,
+      departuredate: formattedDate,
+    })
   }
-  const handleOnDateChange = ({ startDate, endDate }) => {
-    var date1 = new Date(JSON.stringify({ startDate, endDate }).slice(14, 24))
-    var tostring1 = date1.toDateString()
-    var stringdate1 = tostring1.split(' ')
-    var date2 = new Date(JSON.stringify({ startDate, endDate }).slice(51, 61))
-    var tostring2 = date2.toDateString()
-    var stringdate2 = tostring2.split(' ')
-    updateSearchFlights(4, { ...searchflights[4], 'rtndate': { startDate, endDate }, 'departuredate': stringdate1[0] + ', ' + stringdate1[2] + ' ' + stringdate1[1], 'destinationdate': stringdate2[0] + ', ' + stringdate2[2] + ' ' + stringdate2[1] })
 
+  const handleOnDateChange = ({ startDate, endDate }) => {
+    updateSearchFlights(4, {
+      ...searchflights[4],
+      rtndate: { startDate, endDate },
+      departuredate: startDate && typeof startDate.format === 'function' ? startDate.format('ddd, MMM DD') : null,
+      destinationdate: endDate && typeof endDate.format === 'function' ? endDate.format('ddd, MMM DD') : null,
+    })
   }
+
   const [calendarFocused, setCalendarFocus] = useState(false);
-  const onCalendarFocusChange = (focused) => {
+  const onCalendarFocusChange = ({ focused }) => {
     setCalendarFocus(focused)
   };
+
   const handleRadioClass = (event) => {
     updateSearchFlights(5, { ...searchflights[5], 'passengerClass': event.target.value })
   }
@@ -72,18 +87,30 @@ const Home = () => {
 
   const SearchFlights = (e) => {
     e.preventDefault()
-    if (searchflights[0].departure && searchflights[1].arrival && searchflights[2].tripValue === 'Return' ? searchflights[4].departuredate : searchflights[3].departuredate) {
-      localStorage.setItem('searchedData', JSON.stringify(searchflights))
-      createLocalPassengers(searchflights[5])
-      navigate(`/owsearch/${searchflights[0].departurecode}&${searchflights[1].arrivalcode}`)
+    const hasDeparture = Boolean(searchflights[0].departurecode)
+    const hasDestination = Boolean(searchflights[1].arrivalcode)
+    const hasDate = searchflights[2].tripValue === 'Return'
+      ? Boolean(searchflights[4].rtndate?.startDate && searchflights[4].rtndate?.endDate)
+      : Boolean(searchflights[3].owdate)
+    const sameAirport = searchflights[0].departurecode && searchflights[0].departurecode === searchflights[1].arrivalcode
+
+    if (!hasDeparture || !hasDestination) {
+      setValidationMessage('Select both departure and destination airports.')
+      return
     }
-    // else {
-    //   if (searchflights[0].departure === '') {
-    //     setMultiAlert({ ...multialert, departurealert: 'Departure airport is missing' })
-    //   }
-    //   if (searchflights[1].arrival === '') { setMultiAlert({ ...multialert, 'arrivalalert': 'Destination airport is missing' }) }
-    //   setMultiAlert({ ...multialert, success: true })
-    // }
+    if (sameAirport) {
+      setValidationMessage('Departure and destination airports must be different.')
+      return
+    }
+    if (!hasDate) {
+      setValidationMessage('Select your travel date(s) before searching.')
+      return
+    }
+
+    setValidationMessage('')
+    localStorage.setItem('searchedData', JSON.stringify(searchflights))
+    createLocalPassengers(searchflights[5])
+    navigate(`/owsearch/${searchflights[0].departurecode}&${searchflights[1].arrivalcode}`)
   }
 
 
@@ -95,8 +122,12 @@ const Home = () => {
       <div >
         <div className="home-con">
           <div className="sf-con">
+            <div className="hero-card">
+              <div className="hero-title">Smarter, Greener Flight Search</div>
+              <div className="hero-subtitle">Compare fare, duration, and estimated CO2 before you book.</div>
             <form className="search-flights-form" onSubmit={SearchFlights}>
-              <div className="f-q-container  d-flex">
+              {validationMessage ? <div className="home-validation-msg">{validationMessage}</div> : null}
+              <div className="f-q-container">
                 <FilterDropdown
                   className="primary br"
                   placeholder="From"
@@ -104,6 +135,9 @@ const Home = () => {
                   options={Airports}
                   defaultOption="Select Departure"
                   onChange={onChangeDeparture}
+                  onSearch={searchAirports}
+                  onOpen={ensureAirportsLoaded}
+                  isInitialLoading={airportsLoading}
                 />
                 <FilterDropdown
                   className="primary"
@@ -112,6 +146,9 @@ const Home = () => {
                   options={Airports}
                   defaultOption="Select Destination"
                   onChange={onChangeArrival}
+                  onSearch={searchAirports}
+                  onOpen={ensureAirportsLoaded}
+                  isInitialLoading={airportsLoading}
                 />
                 <div className="dropdown trip-details-con">
                   <div
@@ -139,9 +176,9 @@ const Home = () => {
                     <div className="depart date-select-item-d">
                       <div className="date-placeholder">Depart</div>
                       <SingleDatePicker
-                        date={searchflights[3].owdate}
+                        date={safeMomentOrNull(searchflights[3].owdate)}
                         onDateChange={onDateChange}
-                        focused={calendarFocused.focused}
+                        focused={calendarFocused}
                         onFocusChange={onCalendarFocusChange}
                         id="#123"
                         displayFormat="D MMM YYYY"
@@ -156,10 +193,10 @@ const Home = () => {
                       </div>
                       <DateRangePicker
                         startDatePlaceholderText="Depart"
-                        startDate={searchflights[4].rtndate.startDate}
+                        startDate={safeMomentOrNull(searchflights[4].rtndate.startDate)}
                         onDatesChange={handleOnDateChange}
                         endDatePlaceholderText="Return"
-                        endDate={searchflights[4].rtndate.endDate}
+                        endDate={safeMomentOrNull(searchflights[4].rtndate.endDate)}
                         numberOfMonths={1}
                         displayFormat="D MMM YYYY"
                         focusedInput={focus}
@@ -312,9 +349,10 @@ const Home = () => {
                 </svg></Button>
               </div>
             </form>
+            </div>
           </div>
           <div className="img-con">
-            <img src={require('../images/flights-grey.jpg')}/>
+            <img src={require('../images/flights-grey.jpg')} alt="Air travel illustration" />
           </div>
         </div>
       </div>

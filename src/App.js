@@ -9,6 +9,8 @@ import Login from './pages/Auth/Login';
 import Navbar from './pages/Navbar';
 import OnewaySearch from './pages/OnewaySearch';
 import Passengerdetails from './pages/Passengerdetails';
+import PaymentCancel from './pages/PaymentCancel';
+import PaymentSuccess from './pages/PaymentSuccess';
 import Register from './pages/Auth/Register';
 import ReturnSearch from './pages/ReturnSearch';
 // import FlightState from './context/FlightState';
@@ -35,6 +37,8 @@ function App() {
                 <Route exact path="fetchbooking/:slug" element={<FetchBooking />} />
                 <Route exact path="bookingsummary" element={<BookingSummary />} />
                 <Route exact path="confirmation/:slug" element={<Confirmationpage />} />
+                <Route exact path="payment/success" element={<PaymentSuccess />} />
+                <Route exact path="payment/cancel" element={<PaymentCancel />} />
               </Route>
               <Route exact path="/owsearch/:slug" element={<OnewaySearch />} />
               <Route exact path="/rsearch/:slug" element={<ReturnSearch />} />

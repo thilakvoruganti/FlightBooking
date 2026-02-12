@@ -1,6 +1,5 @@
 import React, { useState, useRef } from 'react'
 import '../styles/BookingSummary.css'
-import '../styles/BookingSummary.css'
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useFlight } from '../context/Flight'
 import { useAuth } from '.././context/Auth'
@@ -16,7 +15,9 @@ const BookingSummary = () => {
     const { auth } = useAuth()
     const { searchflights, tripFlights, localpassengers, setLocalPassengers } = useFlight()
 
-    const [bookingstatus, setBookingStatus] = useState(true)
+    const [isPaying, setIsPaying] = useState(false)
+    const [paymentError, setPaymentError] = useState('')
+    const primaryContacts = localpassengers.filter((element) => element.email)
 
     useEffect(() => {
         const handler = () => {
@@ -76,8 +77,13 @@ const BookingSummary = () => {
             }
         }
     }
+
+    const passengerTypeLabel = `${searchflights[5].adultCount ? `${searchflights[5].adultCount} Adult` : ''}${searchflights[5].childCount ? ` + ${searchflights[5].childCount} Child` : ''}${searchflights[5].infantCount ? ` + ${searchflights[5].infantCount} Infant` : ''}`.trim()
     const bookandpay = async () => {
-        if (auth?.token) {
+        if (!auth?.token || isPaying) return
+        setIsPaying(true)
+        setPaymentError('')
+        try {
             const { data } = await axios.post(`/auth/bookflight`, {
                 triptype: searchflights[2].tripValue,
                 tripclass: searchflights[5].passengerClass,
@@ -105,11 +111,17 @@ const BookingSummary = () => {
                 rdestinationairport: tripFlights[1].destinationairport,
                 rdestinationcode: tripFlights[1].destinationcode
             })
-            var booked = data
-            if (booked.success) {
-                for (let i = 0; i < localpassengers.length; i++) {
-                    const psopt = []
-                    let { data } = await axios.post(`/auth/createpassenger`, {
+            const booked = data
+            if (!booked?.success || !booked?.booking?._id) {
+                setPaymentError('Unable to create booking. Please try again.')
+                setIsPaying(false)
+                return
+            }
+
+            let allPassengersSaved = true
+            let passengerSaveError = ''
+            for (let i = 0; i < localpassengers.length; i++) {
+                const response = await axios.post(`/auth/createpassenger`, {
                         firstname: localpassengers[i].firstname,
                         lastname: localpassengers[i].lastname,
                         gender: localpassengers[i].gender,
@@ -121,20 +133,33 @@ const BookingSummary = () => {
                         email: localpassengers[i].email,
                         bookingid: booked.booking._id
                     })
-                    psopt[i] = data
-                    if (psopt[i].passenger.success !== true) {
-                        setBookingStatus(false)
-                    }
+                if (!response?.data?.success) {
+                    allPassengersSaved = false
+                    passengerSaveError = response?.data?.msg || 'Passenger details could not be saved.'
+                    break
                 }
-                if (bookingstatus) {
-                    navigate(`/dashboard/confirmation/success&${booked.booking._id}`)
-                }
-                if (!bookingstatus) {
-                    navigate(`/dashboard/confirmation/failure&${booked.booking._id}`)
-                }
-
-
             }
+
+            if (!allPassengersSaved) {
+                setPaymentError(passengerSaveError || 'Passenger details could not be saved. Please review details and try again.')
+                setIsPaying(false)
+                return
+            }
+
+            const paymentSession = await axios.post('/auth/payments/create-checkout-session', {
+                bookingId: booked.booking._id,
+            })
+            const checkoutUrl = paymentSession?.data?.url
+            if (!checkoutUrl) {
+                setPaymentError('Unable to open payment page. Please try again.')
+                setIsPaying(false)
+                return
+            }
+
+            window.location.assign(checkoutUrl)
+        } catch (error) {
+            setPaymentError('Unable to initiate payment. Please verify Stripe setup and try again.')
+            setIsPaying(false)
         }
     }
 
@@ -144,65 +169,80 @@ const BookingSummary = () => {
             <div className='fpc-con'>
                 <div className='ts-body'>
                     {tripFlights.slice(0, searchflights[2].tripValue === 'Return' ? tripFlights.length : 1).map((flight, i) => {
-                        return <div className='fd-con'>
+                        const tripDate = i === 1
+                            ? searchflights[4].destinationdate
+                            : searchflights[2].tripValue === 'Return'
+                                ? searchflights[4].departuredate
+                                : searchflights[3].departuredate
+
+                        return <div className='fd-con' key={`${flight._id || flight.flightnumber}-${i}`}>
                             <div className='ts-t-m'>{i === 0 ? "Outbound flight" : "Inbound flight"}</div>
                             <div className='fd-con-header'>
                                 <div className='ts-i-xl'>{flight.departure}</div>
                                 <div className='ts-arrow'>&#8594;</div>
                                 <div className='ts-i-xl'>{flight.destination}</div>
-                                <div className='ts-i-m ts-t-m-p'>{i === 1 ? searchflights[4].destinationdate : searchflights[2].tripValue === 'Return' ? searchflights[4].departuredate : searchflights[4].destinationdate}</div>
+                                <div className='ts-i-m ts-t-m-p'>{tripDate}</div>
                             </div>
                             <div className='fd-con-body'>
-                                <div className='ts-i-m table-h'>Departure</div>
-                                <div className='ts-i-m table-h'></div>
-                                <div className='ts-i-m table-h'>Arrival</div>
-                                <div className='ts-i-m table-h'>Operated by</div>
-                                <div className='ts-i-m table-h'>Class</div>
-                                <div className='ts-i-l-b'>{flight.departuretime + ' ' + flight.departurecode}</div>
-                                <div></div>
-                                <div className='ts-i-l-b'>{flight.destinationtime + ' ' + flight.destinationcode}</div>
-                                <div className='ts-i-l'>{flight.flightname}</div>
-                                <div className='ts-i-l'>{searchflights[5].passengerClass}</div>
-                                <div className='ts-i-m'>{flight.departure + ', ' + flight.departureairport}</div>
-                                <div className='ts-i-m text-center'>Non-stop</div>
-                                <div className='ts-i-m'>{flight.destination + ', ' + flight.destinationairport}</div>
-                                <div></div>
-                                <div></div>
+                                <div className='fd-col'>
+                                    <div className='ts-i-m table-h'>Departure</div>
+                                    <div className='ts-i-l-b'>{flight.departuretime} {flight.departurecode}</div>
+                                    <div className='ts-i-m'>{flight.departure}, {flight.departureairport}</div>
+                                </div>
+                                <div className='fd-col fd-col-center'>
+                                    <div className='ts-i-m table-h'>Duration</div>
+                                    <div className='ts-i-l'>Non-stop</div>
+                                </div>
+                                <div className='fd-col'>
+                                    <div className='ts-i-m table-h'>Arrival</div>
+                                    <div className='ts-i-l-b'>{flight.destinationtime} {flight.destinationcode}</div>
+                                    <div className='ts-i-m'>{flight.destination}, {flight.destinationairport}</div>
+                                </div>
+                                <div className='fd-col'>
+                                    <div className='ts-i-m table-h'>Operated by</div>
+                                    <div className='ts-i-l'>{flight.flightname}</div>
+                                </div>
+                                <div className='fd-col'>
+                                    <div className='ts-i-m table-h'>Class</div>
+                                    <div className='ts-i-l'>{searchflights[5].passengerClass}</div>
+                                </div>
                             </div>
                         </div>
                     })}
                     <div className='ts-i-xl ts-i-h-p'>Passenger Details</div>
                     <div className='pd-con'>
-                        <div className='ts-i-m table-h'>Passenger name</div>
-                        <div className='ts-i-m table-h'>Passport</div>
-                        <div className='ts-i-m table-h'>Date of birth</div>
-                        <div className='ts-i-m table-h'>Type</div>
-                        {localpassengers.map((element) => {
+                        <div className='summary-grid-head'>
+                            <div className='ts-i-m table-h'>Passenger name</div>
+                            <div className='ts-i-m table-h'>Passport</div>
+                            <div className='ts-i-m table-h'>Date of birth</div>
+                            <div className='ts-i-m table-h'>Type</div>
+                        </div>
+                        {localpassengers.map((element, index) => {
                             const { firstname, lastname, passport, dateofbirth, type } = element
-                            return <>
-                                <div className='ts-i-l table-d'>{firstname + ' ' + lastname}</div>
-                                <div className='ts-i-l table-d'>{passport ? passport : '-'}</div>
-                                <div className='ts-i-l table-d'>{dateofbirth}</div>
-                                <div className='ts-i-l table-d'>{type}</div>
-                            </>
+                            return <div className='summary-grid-row' key={`${firstname}-${lastname}-${index}`}>
+                                <div className='ts-i-l table-d' data-label='Passenger name'>{firstname + ' ' + lastname}</div>
+                                <div className='ts-i-l table-d' data-label='Passport'>{passport ? passport : '-'}</div>
+                                <div className='ts-i-l table-d' data-label='Date of birth'>{dateofbirth}</div>
+                                <div className='ts-i-l table-d' data-label='Type'>{type}</div>
+                            </div>
                         })}
                     </div>
                     <div className='ts-i-xl ts-i-h-p'>Contact Details</div>
                     <div className='cd-con'>
-                        <div className='ts-i-m table-h'>Passenger name</div>
-                        <div className='ts-i-m table-h'>Type</div>
-                        <div className='ts-i-m table-h'>Email</div>
-                        <div className='ts-i-m table-h'>Number</div>
-                        {localpassengers.map((element) => {
-                            if (element.email !== '') {
-                                return <>
-                                    <div className='ts-i-l'>{element.firstname + ' ' + element.lastname}</div>
-                                    <div className='ts-i-l'>Primary</div>
-                                    <div className='ts-i-l'>{element.email}</div>
-                                    <div className='ts-i-l'>{element.mobilenumber}</div>
-                                </>
-                            }
-                        })}
+                        <div className='summary-grid-head'>
+                            <div className='ts-i-m table-h'>Passenger name</div>
+                            <div className='ts-i-m table-h'>Type</div>
+                            <div className='ts-i-m table-h'>Email</div>
+                            <div className='ts-i-m table-h'>Number</div>
+                        </div>
+                        {primaryContacts.map((element, index) => (
+                            <div className='summary-grid-row' key={`contact-${element.firstname}-${index}`}>
+                                <div className='ts-i-l' data-label='Passenger name'>{element.firstname + ' ' + element.lastname}</div>
+                                <div className='ts-i-l' data-label='Type'>Primary</div>
+                                <div className='ts-i-l' data-label='Email'>{element.email}</div>
+                                <div className='ts-i-l' data-label='Number'>{element.mobilenumber}</div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
@@ -210,28 +250,35 @@ const BookingSummary = () => {
             <div className='ts-footer'>
                 <div className='d-flex justify-content-between'>
                     <div className='ts-i-m'>Trip price</div>
-                    <div className='ts-i-m'>INR {totalPrice()}</div>
+                    <div className='ts-i-m'>USD {totalPrice()}</div>
                 </div>
-                <div className='ts-i-m'>&#40;{searchflights[5].adultCount ? <>{searchflights[5].adultCount} Adult</> : ''}{searchflights[5].childCount ? <>+{searchflights[5].childCount}Child</> : ''}{searchflights[5].infantCount ? <>+{searchflights[5].infantCount}Infant</> : ''}&#41;</div>
+                <div className='ts-i-m'>&#40;{passengerTypeLabel}&#41;</div>
                 <div className='pa-con'>
                     <div className='ts-i-l-b'>Payable Amount:</div>
-                    <div className='ts-i-l-b'>INR {totalPrice()}</div>
+                    <div className='ts-i-l-b'>USD {totalPrice()}</div>
+                </div>
+            </div>
+            <div className='payment-test-note' role='note'>
+                <div className='payment-test-note-title'>Test Payment (Stripe Sandbox)</div>
+                <div className='payment-test-note-body'>
+                    Use card <code>4242 4242 4242 4242</code>, any future expiry, any 3-digit CVC, and any ZIP code.
                 </div>
             </div>
             <div className='d-flex justify-content-around'>
-                <button onClick={bookandpay} className='prcd-btn'>Book and Pay</button>
+                <button onClick={bookandpay} className='prcd-btn' disabled={isPaying}>{isPaying ? 'Redirecting to Stripe...' : 'Book and Pay'}</button>
             </div>
+            {paymentError ? <div className='payment-error-msg'>{paymentError}</div> : null}
             {/* <!-- Button trigger modal --> */}
             <button type="button" ref={alertBtn} className="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#modifyBooking">
                 Launch demo modal
             </button>
 
             {/* <!-- Modal --> */}
-            <div className="modal fade " id="modifyBooking" tabindex="-1" aria-labelledby="modifyBookingLabel" aria-hidden="true">
+            <div className="modal fade " id="modifyBooking" tabIndex="-1" aria-labelledby="modifyBookingLabel" aria-hidden="true">
                 <div className="modal-dialog modifyalert">
                     <div className="modal-content">
                         <div className="modal-header ma-header">
-                            <h1 className="modal-title fs-5" id="modifyBookingLabel"></h1>
+                            <h1 className="modal-title fs-5" id="modifyBookingLabel">Confirm Booking Change</h1>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body ma-body">

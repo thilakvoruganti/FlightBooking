@@ -1,9 +1,8 @@
-import React, { useState, useContext } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import '../../styles/Auth.css';
 import Alert from '../../components/Alert';
 import Input from '../../components/Input';
-import Button from '../../components/Button'
 import { useAuth } from '../../context/Auth'
 import { useFlight } from '../../context/Flight'
 
@@ -19,16 +18,23 @@ const Login = () => {
         'lemail':'',
         'lpassword':''
     })
-    // const [alert, setAlert] = useState({})
-    // const [invalid, setInvalid] = useState({})
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [serverError, setServerError] = useState('')
+
+    useEffect(() => {
+        // Clear shared form error state when entering login page.
+        setAlert((prev) => ({ ...prev, lemail: true, lpassword: true, servermsg: true }))
+        setInvalid((prev) => ({ ...prev, lemail: '', lpassword: '' }))
+    }, [setAlert, setInvalid])
 
     const onChangelogin = (e) => {
+        if (serverError) setServerError('')
         setCredentials({ ...credentials, [e.target.name]: e.target.value })
     }
 
     const validationCheck = () => {
-        let emailv = /@/.test(credentials.lemail)
-        let pwdv = /^[a-zA-Z0-9]{1,}$/.test(credentials.lpassword)
+        let emailv = /^\S+@\S+\.\S+$/.test(credentials.lemail.trim())
+        let pwdv = String(credentials.lpassword || '').length >= 1
 
         setAlert({ ...alert, "lemail": emailv, "lpassword": pwdv })
         setInvalid({ ...invalid, 'lemail': emailv ? '' : 'is-invalid', 'lpassword': pwdv ? '' : 'is-invalid' })
@@ -42,33 +48,41 @@ const Login = () => {
     }
 
     const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (isSubmitting) return
+        setServerError('')
         let validation = validationCheck()
         if (validation) {
-            e.preventDefault();
-            const response = await fetch("http://localhost:4000/api/v1/auth/login", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ email: credentials.lemail, password: credentials.lpassword })
-            });
-            const data = await response.json()
-            if (data.success) {
-                localStorage.setItem('auth',JSON.stringify(data));
-                setAuth({...auth,user:data.user,token:data.token})
-                navigate(location.state || '/');
-            }
-            if (data.success === false) {
-                setAlert({ ...alert, "servermsg": data.success })
+            setIsSubmitting(true)
+            try {
+                const response = await fetch("http://localhost:4000/api/v1/auth/login", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: credentials.lemail.trim(), password: credentials.lpassword })
+                });
+                const data = await response.json()
+                if (data.success) {
+                    localStorage.setItem('auth',JSON.stringify(data));
+                    setAuth({...auth,user:data.user,token:data.token})
+                    navigate(location.state || '/');
+                } else {
+                    setServerError('Please try to login with correct credentials.')
+                }
+            } catch (error) {
+                setServerError('Unable to reach server. Please try again.')
+            } finally {
+                setIsSubmitting(false)
             }
         }
     }
 
     return (
-        <div className='lr-con'>
+        <div className='lr-con login-page'>
             <div>
-                <div className='lr-f-title'>Log in</div>
                 <div className='lr-f-body'>
+                    <div className='lr-f-title'>Log in</div>
                     <form className='lr-form' onSubmit={handleSubmit}>
                         <div className='lr-form-item'>
                             <Input
@@ -76,7 +90,7 @@ const Login = () => {
                                 placeholder='Enter your email address'
                                 onChange={onChangelogin}
                                 value={credentials.lemail}
-                                type="text"
+                                type="email"
                                 name="lemail"
                                 id="lemail"
                                 validation="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"
@@ -92,22 +106,24 @@ const Login = () => {
                                 type="password"
                                 name="lpassword"
                                 id="lpassword"
-                                validation="^[a-zA-Z0-9@*_-]{1,}$"
-                                alertmsg="Enter a valid password"
+                                validation="^.{1,}$"
+                                alertmsg="Password is required"
                             />
                         </div>
                         <div className='justify-content-center d-flex'>
-                            {alert.servermsg === false ? <Alert error={"Please try to login with correct credentials"} /> : <></>}
+                            {serverError ? <Alert error={serverError} /> : <></>}
                         </div>
                         <div className='lr-form-item'>
                         <div className='d-flex justify-content-around'>
-                            <Button type="secondary">Login</Button>
+                            <button className='btn-com btn-com-secondary' disabled={isSubmitting}>
+                                {isSubmitting ? 'Logging in...' : 'Login'}
+                            </button>
                         </div>
                         </div>
                     </form>
                     <div className='lr-link-con'>
                         <Link to="/register" className='lr-link-btn'>Don’t have an account yet?</Link>
-                        <Link to="/register" className='lr-link-btn'>Forgot your password</Link>
+                        <Link to="/login" className='lr-link-btn'>Forgot your password</Link>
                     </div>
                 </div>
             </div>

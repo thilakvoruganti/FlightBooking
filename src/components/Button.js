@@ -1,9 +1,11 @@
 import React from 'react'
 import '../styles/Components.css'
 
-const Button = ({children, type, onChange}) => {
+const Button = ({ children, type, onChange, onClick, ...rest }) => {
   return (
-    <button className={`btn-com btn-com-${type}`} onClick={onChange} >{children}</button>
+    <button className={`btn-com btn-com-${type}`} onClick={onClick || onChange} {...rest}>
+      {children}
+    </button>
   )
 }
 

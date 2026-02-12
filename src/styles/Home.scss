@@ -1,22 +1,47 @@
 body{
-    background-color: #f2f3fa;
-// #59A739
-// #29870E
+    background:
+      radial-gradient(95% 75% at 90% 10%, rgba(167, 201, 255, 0.28) 0%, rgba(167, 201, 255, 0) 62%),
+      radial-gradient(92% 72% at 82% 42%, rgba(186, 230, 188, 0.24) 0%, rgba(186, 230, 188, 0) 64%),
+      radial-gradient(90% 70% at 24% 6%, rgba(250, 227, 196, 0.22) 0%, rgba(250, 227, 196, 0) 56%),
+      linear-gradient(180deg, #fcfdfd 0%, #f8fafb 52%, #f5f7f8 100%);
+    background-attachment: fixed;
 }
 .home-con{
     --font-Jotia: Jotia,Verdana,Geneva,sans-serif;
-    background-color: #fff;
     border-radius: 1.302vw;
-    background-color: #f2f3fa;
+    background: transparent;
+    min-height: calc(100vh - 4.7vw);
     .sf-con{
-        margin-top: 6vw;
+        margin-top: 4vw;
         display: flex;
         justify-content: center;
     }
+    .hero-card{
+        width: 100%;
+        max-width: 88vw;
+        background: rgba(255, 255, 255, 0.88);
+        border: 0.052vw solid rgba(215, 222, 230, 0.95);
+        border-radius: 1.042vw;
+        box-shadow: 0 0.6vw 1.4vw rgba(64, 76, 90, 0.1);
+        backdrop-filter: blur(0.312vw);
+        padding: 1.302vw 1.875vw 1.458vw;
+    }
+    .hero-title{
+        font: normal normal 500 2.22vw/2.46vw var(--font-Jotia);
+        color: #2f3a34;
+        margin-bottom: 0.34vw;
+        letter-spacing: 0.006vw;
+    }
+    .hero-subtitle{
+        font: normal normal normal 0.99vw/1.302vw var(--font-Jotia);
+        color: #4e5a52;
+        margin-bottom: 1.146vw;
+    }
     .img-con{
+        margin-top: -1.6vw;
         img{
-            --fimgwidth:41.667vw;
-            --fimgheight:31.25vw;
+            --fimgwidth:35vw;
+            --fimgheight:26vw;
             width: var(--fimgwidth);
             height:var(--fimgheight);
         }
@@ -29,6 +54,16 @@ body{
 .f-q-container{
     display: flex;
     --filterheight:4.151vw;
+    align-items: center;
+    position: relative;
+    > *{
+        box-sizing: border-box;
+    }
+}
+.home-validation-msg{
+    margin-bottom: 0.625vw;
+    color: #8a2f2f;
+    font: normal normal normal 0.885vw/1.198vw var(--font-Jotia);
 }
 .s-b-con{
     display: flex;
@@ -106,16 +141,21 @@ body{
     --font-Jotia: Jotia,Verdana,Geneva,sans-serif;
     .trip-details-btn{
         height: 4.167vw;
-        width:7vw;
-        border:0.052vw solid #ccc;
+        width:8vw;
+        border:0.052vw solid #c2cbd7;
         border-left:none;
-        padding: 0.521vw;
+        padding: 0.56vw 0.68vw;
         font-family: var(--font-Jotia);
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
         .trip-placeholder{
-            font:normal normal normal 0.764vw/0.766vw var(--font-Jotia);
+            font:normal normal normal 0.764vw/1vw var(--font-Jotia);
         }
         .trip-displayvalue{
-            font:normal normal normal 0.99vw/2.083vw var(--font-Jotia);
+            font:normal normal normal 1.042vw/1.25vw var(--font-Jotia);
+            margin-top: 0.24vw;
         }
     }
     .dropdown-toggle::after{
@@ -123,7 +163,7 @@ body{
     }
     .trip-select-con{
         padding: 0.521vw;
-        width: 7vw;
+        width: 8vw;
         .trip-item{
             font: normal normal normal 0.99vw/1.042vw var(--font-Jotia);
             margin-bottom: 0.521vw;
@@ -140,26 +180,43 @@ body{
 
 .date-select-con{
     --font-Jotia: Jotia,Verdana,Geneva,sans-serif;
-    border:0.052vw solid #ccc;
+    border:0.052vw solid #c2cbd7;
     border-left:none;
     width:18vw;
+    height: 4.167vw;
+    background-color: #fff;
+    display: flex;
+    align-items: stretch;
     .date-select-item-d{
         width:9vw;
-        padding: 0.521vw;
+        padding: 0.56vw 0.68vw;
+        height: 100%;
+        box-sizing: border-box;
         font-family: var(--font-Jotia);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
         .date-placeholder{
-            font:normal normal normal 0.764vw/0.766vw var(--font-Jotia);
+            font:normal normal normal 0.764vw/1vw var(--font-Jotia);
         }
     }
     .date-select-item-r{
         width:18vw;
-        padding: 0.521vw;
+        padding: 0.56vw 0.68vw;
+        height: 100%;
+        box-sizing: border-box;
         font-family: var(--font-Jotia);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
         .dp-r{
             width:9vw
         }
         .date-placeholder{
-            font:normal normal normal 0.764vw/0.766vw var(--font-Jotia);
+            font:normal normal normal 0.764vw/1vw var(--font-Jotia);
+        }
+        > .d-flex{
+            margin-bottom: 0.24vw;
         }
     }
     .SingleDatePicker .SingleDatePickerInput__withBorder{
@@ -168,19 +225,24 @@ body{
     }
     .DateInput{
         width:7.771vw;
-        height:2.083vw;
+        height:auto;
     }
     .DateInput_input__focused{
         border: 0;
     }
     .DateInput_input{
-        font:normal normal normal 0.99vw/2.042vw var(--font-Jotia) !important;
+        font:normal normal normal 1.042vw/1.25vw var(--font-Jotia) !important;
         padding: 0;
-        background-color: #f2f3fa;
+        height: auto;
+        background-color: #fff;
+    }
+    .DateRangePickerInput{
+        background-color: #fff;
     }
     .DateRangePickerInput__withBorder{
         border: none;
         border-radius: 0;
+        background-color: #fff;
     }
     .DateRangePickerInput_arrow_svg{
         display: none;
@@ -214,19 +276,24 @@ body{
     .pc-dropdown-btn{
         cursor: pointer;
         height: 4.167vw;
-        width:12.719vw;
+        width:13.4vw;
         // height:4.151vw;
-        border:0.052vw solid #ccc;
+        border:0.052vw solid #c2cbd7;
         border-left:none;
-        padding: 0.521vw;
+        padding: 0.56vw 0.68vw;
         font-family: var(--font-Jotia);
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
         // border-top-right-radius: 0.26vw;
         // border-bottom-right-radius: 0.26vw;
         .pc-placeholder{
-            font:normal normal normal 0.764vw/0.766vw var(--font-Jotia);
+            font:normal normal normal 0.764vw/1vw var(--font-Jotia);
         }
         .pc-displayvalue{
-            font:normal normal normal 0.99vw/2.083vw var(--font-Jotia);
+            font:normal normal normal 1.042vw/1.25vw var(--font-Jotia);
+            margin-top: 0.24vw;
         }
     }
     .dropdown-toggle::after{
@@ -289,6 +356,38 @@ body{
                 padding-left: 0;
             }
         }
+    }
+}
+
+@media (max-width: 992px){
+    .home-con{
+        .sf-con{
+            margin-top: 1.563vw;
+            padding: 0 3vw;
+        }
+        .hero-card{
+            width: 100%;
+            padding: 3.2vw 4.2vw 3.4vw;
+            border-radius: 3vw;
+        }
+        .hero-title{
+            font-size: 5vw;
+            line-height: 5.4vw;
+        }
+        .hero-subtitle{
+            font-size: 3.4vw;
+            line-height: 4.5vw;
+            margin-bottom: 3vw;
+        }
+        .img-con{
+            img{
+                width: 72vw;
+                height: auto;
+            }
+        }
+    }
+    .f-q-container{
+        flex-wrap: wrap;
     }
 }
 
@@ -365,3 +464,648 @@ body{
 //         color: #fff;
 //     }
 // }
+
+// Modern responsive home overrides (rem/clamp based, no vw dependency for layout)
+body{
+    background:
+      radial-gradient(70% 70% at 90% 8%, rgba(156, 205, 115, 0.52) 0%, rgba(156, 205, 115, 0) 62%),
+      radial-gradient(65% 60% at 84% 44%, rgba(106, 179, 89, 0.35) 0%, rgba(106, 179, 89, 0) 70%),
+      linear-gradient(180deg, #fcfefc 0%, #f4f9f4 58%, #eef5ef 100%);
+    background-attachment: fixed;
+}
+
+.home-con{
+    --search-field-height: 4.8rem;
+    min-height: 0;
+    height: calc(100vh - 4.2rem);
+    overflow: hidden;
+    position: relative;
+
+    .sf-con{
+        margin-top: clamp(1.25rem, 2.4vh, 2.75rem);
+        padding: 0 clamp(0.75rem, 2vw, 2rem);
+        position: relative;
+        z-index: 6;
+    }
+
+    .hero-card{
+        width: min(92rem, 100%);
+        padding: clamp(1.2rem, 2vw, 2rem);
+        border-radius: 1.1rem;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid #cfd8e3;
+        box-shadow: 0 12px 28px rgba(57, 71, 85, 0.08);
+    }
+
+    .hero-title{
+        font: normal normal 500 clamp(2.2rem, 3.8vw, 3.7rem)/1.08 var(--font-Jotia);
+        color: #4a5568;
+        margin-bottom: 0.35rem;
+        letter-spacing: 0;
+    }
+
+    .hero-subtitle{
+        font: normal normal normal clamp(1.12rem, 1.45vw, 1.56rem)/1.28 var(--font-Jotia);
+        color: #5a6676;
+        margin-bottom: 1rem;
+    }
+
+    .f-q-container{
+        display: grid;
+        grid-template-columns: minmax(10.5rem, 1.08fr) minmax(10.5rem, 1.08fr) minmax(7rem, 0.62fr) minmax(16.5rem, 1.55fr) minmax(13rem, 1.05fr) minmax(11rem, 0.9fr);
+        align-items: stretch;
+        gap: 0;
+    }
+
+    .f-q-container > *{
+        min-width: 0;
+    }
+
+    .f-q-container .fdd-com,
+    .f-q-container .trip-details-con,
+    .f-q-container .date-select-con,
+    .f-q-container .passengercount-con,
+    .f-q-container .btn-com-searchflights,
+    .f-q-container .fdd-com .ffd-primary,
+    .f-q-container .trip-details-con .trip-details-btn,
+    .f-q-container .passengercount-con .pc-dropdown-btn{
+        width: 100%;
+        min-height: var(--search-field-height);
+    }
+
+    .f-q-container .fdd-com .ffd-primary,
+    .f-q-container .trip-details-con .trip-details-btn,
+    .f-q-container .date-select-con,
+    .f-q-container .passengercount-con .pc-dropdown-btn{
+        border-color: #bcc9d6;
+        background-color: #fff;
+        padding: 0.55rem 0.72rem;
+    }
+
+    .f-q-container .fdd-com .br{
+        border-right: 1px solid #bcc9d6;
+    }
+
+    .f-q-container .fdd-com .fdd-placeholder,
+    .f-q-container .trip-details-con .trip-placeholder,
+    .f-q-container .date-select-con .date-placeholder,
+    .f-q-container .passengercount-con .pc-placeholder{
+        font-size: 0.76rem;
+        line-height: 1rem;
+        color: #3b4451;
+    }
+
+    .f-q-container .fdd-com .fdd-value,
+    .f-q-container .trip-details-con .trip-displayvalue,
+    .f-q-container .passengercount-con .pc-displayvalue,
+    .f-q-container .date-select-con .DateInput_input{
+        font-size: clamp(1.05rem, 1.08vw, 1.35rem);
+        line-height: 1.25;
+        color: #2d3748;
+        margin-top: 0.25rem;
+    }
+
+    .f-q-container .passengercount-con .pc-displayvalue{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .f-q-container .date-select-con{
+        border-left: 0;
+        align-items: center;
+    }
+
+    .f-q-container .date-select-con .date-select-item-d,
+    .f-q-container .date-select-con .date-select-item-r{
+        height: 100%;
+        padding: 0.55rem 0.72rem;
+        justify-content: center;
+    }
+
+    .f-q-container .date-select-con .date-select-item-r > .d-flex{
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .f-q-container .date-select-con .date-select-item-r .dp-r{
+        width: auto;
+    }
+
+    .f-q-container .date-select-con .DateRangePickerInput,
+    .f-q-container .date-select-con .DateRangePickerInput__withBorder{
+        width: 100%;
+        display: flex;
+        align-items: center;
+        background-color: transparent;
+    }
+
+    .f-q-container .date-select-con .DateInput{
+        width: 50%;
+        height: auto;
+    }
+
+    .f-q-container .date-select-con .DateInput_input{
+        padding: 0;
+        height: auto;
+        font-size: clamp(1.02rem, 1.06vw, 1.28rem) !important;
+        line-height: 1.25 !important;
+        background-color: transparent;
+    }
+
+    .f-q-container .btn-com-searchflights{
+        border-radius: 0 0.6rem 0.6rem 0;
+        border-left: 0;
+        padding: 0.65rem 0.85rem;
+        min-width: 11.5rem;
+        font-size: clamp(1.02rem, 1.02vw, 1.22rem);
+        line-height: 1.15;
+        font-weight: 500;
+        gap: 0.4rem;
+        white-space: nowrap;
+    }
+
+    .f-q-container .btn-com-searchflights .logo{
+        width: 0.95rem;
+        height: 0.95rem;
+    }
+
+    .f-q-container .fdd-com .fdd-menu-primary{
+        width: min(34rem, calc(100vw - 2rem));
+        max-height: 20rem;
+        border-radius: 0.75rem;
+        z-index: 40;
+    }
+
+    .f-q-container .fdd-com .fdd-menu-primary .fdd-search-wrap{
+        padding: 0.65rem;
+    }
+
+    .f-q-container .fdd-com .fdd-menu-primary .fdd-search-input{
+        height: 2.6rem;
+        border-radius: 0.5rem;
+        padding: 0.5rem 0.75rem;
+        font-size: 1rem;
+        line-height: 1.2;
+    }
+
+    .img-con{
+        margin-top: clamp(1.1rem, 2.2vh, 2rem);
+        padding-left: 0;
+        display: flex;
+        align-items: flex-end;
+        position: relative;
+        z-index: 1;
+        img{
+            width: clamp(24rem, 42vw, 46rem);
+            max-width: 52vw;
+            height: auto;
+            filter: drop-shadow(0 10px 22px rgba(47, 63, 51, 0.08));
+        }
+    }
+}
+
+@media (min-width: 1600px){
+    .home-con{
+        .f-q-container{
+            grid-template-columns: minmax(11.5rem, 1.1fr) minmax(11.5rem, 1.1fr) minmax(7.4rem, 0.62fr) minmax(18rem, 1.7fr) minmax(13.5rem, 1fr) minmax(11.5rem, 0.88fr);
+        }
+
+        .img-con img{
+            width: clamp(26rem, 32vw, 44rem);
+            max-width: 44vw;
+        }
+    }
+}
+
+@media (min-width: 1400px) and (max-width: 1599px){
+    .home-con{
+        .f-q-container .date-select-con .DateInput_input{
+            font-size: clamp(1rem, 0.95vw, 1.15rem) !important;
+        }
+    }
+}
+
+@media (min-width: 1400px){
+    .home-con{
+        .f-q-container .fdd-com .fdd-menu-primary{
+            width: calc(200% + 1px);
+            min-width: calc(200% + 1px);
+            max-width: min(46rem, calc(100vw - 4rem));
+        }
+
+        .f-q-container .fdd-com:nth-child(2) .fdd-menu-primary{
+            left: auto;
+            right: 0;
+        }
+    }
+}
+
+// Final passenger dropdown polish (readability + sizing)
+.home-con .f-q-container .passengercount-con .pass-class-con{
+    width: clamp(20rem, 24vw, 25.5rem) !important;
+    min-width: clamp(20rem, 24vw, 25.5rem) !important;
+}
+
+.home-con .f-q-container .passengercount-con .pass-detail-con{
+    font-size: 0.98rem !important;
+    line-height: 1.3 !important;
+}
+
+.home-con .f-q-container .passengercount-con .pass-detail-con .p-holder{
+    font-size: 0.94rem !important;
+}
+
+.home-con .f-q-container .passengercount-con .pass-detail-con .counter-con{
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.home-con .f-q-container .passengercount-con .pass-detail-con .p-counter,
+.home-con .f-q-container .passengercount-con .pass-detail-con .p-value{
+    width: 2.15rem !important;
+    min-width: 2.15rem !important;
+    height: 2.15rem !important;
+    font-size: 1rem !important;
+}
+
+.home-con .f-q-container .passengercount-con .pass-detail-con .select-label{
+    font-size: 0.96rem !important;
+}
+
+@media (max-width: 991px){
+    .home-con .f-q-container .passengercount-con .pass-class-con{
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+}
+
+@media (max-width: 767px){
+    .home-con .f-q-container .passengercount-con .pass-detail-con{
+        font-size: 0.9rem !important;
+    }
+
+    .home-con .f-q-container .passengercount-con .pass-detail-con .p-holder{
+        font-size: 0.84rem !important;
+    }
+
+    .home-con .f-q-container .passengercount-con .pass-detail-con .p-counter,
+    .home-con .f-q-container .passengercount-con .pass-detail-con .p-value{
+        width: 1.9rem !important;
+        min-width: 1.9rem !important;
+        height: 1.9rem !important;
+        font-size: 0.95rem !important;
+    }
+}
+
+// Keep Depart and Return values separated in DateRangePicker
+.home-con .f-q-container .date-select-con .DateRangePickerInput{
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 0.7rem;
+    align-items: center;
+}
+
+.home-con .f-q-container .date-select-con .DateRangePickerInput_arrow{
+    display: none !important;
+}
+
+.home-con .f-q-container .date-select-con .DateRangePickerInput .DateInput{
+    width: 100% !important;
+    min-width: 0;
+}
+
+.home-con .f-q-container .date-select-con .DateRangePickerInput .DateInput_input{
+    width: 100%;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: nowrap;
+}
+
+.home-con .f-q-container .date-select-con .date-select-item-r,
+.home-con .f-q-container .date-select-con .date-select-item-d{
+    width: 100% !important;
+    min-width: 0;
+}
+
+@media (max-width: 1399px){
+    .home-con{
+        .f-q-container{
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.62rem;
+        }
+
+        .f-q-container .fdd-com .ffd-primary,
+        .f-q-container .trip-details-con .trip-details-btn,
+        .f-q-container .date-select-con,
+        .f-q-container .passengercount-con .pc-dropdown-btn,
+        .f-q-container .btn-com-searchflights{
+            border-left: 1px solid #bcc9d6;
+            border-radius: 0.55rem;
+        }
+
+        .f-q-container .btn-com-searchflights{
+            border: 1px solid #2e8b57;
+        }
+
+        .f-q-container .fdd-com .br{
+            border-right: 1px solid #bcc9d6;
+        }
+
+        .img-con img{
+            width: clamp(22rem, 46vw, 40rem);
+            max-width: 56vw;
+        }
+    }
+}
+
+@media (max-width: 991px){
+    .home-con{
+        --search-field-height: 4.65rem;
+
+        .hero-title{
+            font-size: clamp(2.1rem, 6.4vw, 2.95rem);
+        }
+
+        .hero-subtitle{
+            font-size: clamp(1.08rem, 3vw, 1.28rem);
+            margin-bottom: 0.9rem;
+        }
+
+        .f-q-container{
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .f-q-container .btn-com-searchflights{
+            grid-column: span 2;
+        }
+
+        .img-con img{
+            width: clamp(23rem, 52vw, 36rem);
+            max-width: 64vw;
+        }
+    }
+}
+
+@media (max-width: 767px){
+    .home-con{
+        height: auto;
+        min-height: calc(100vh - 4.2rem);
+        overflow: visible;
+
+        .sf-con{
+            padding: 0 0.7rem;
+        }
+
+        .hero-card{
+            padding: 1.1rem 0.95rem;
+            border-radius: 0.95rem;
+        }
+
+        .hero-title{
+            font-size: clamp(2.15rem, 10vw, 2.75rem);
+            line-height: 1.08;
+        }
+
+        .hero-subtitle{
+            font-size: 1.12rem;
+            line-height: 1.22;
+        }
+
+        .f-q-container{
+            grid-template-columns: 1fr;
+            gap: 0.55rem;
+        }
+
+        .f-q-container .btn-com-searchflights{
+            grid-column: auto;
+            border-radius: 0.55rem;
+        }
+
+        .img-con{
+            margin-top: 0.5rem;
+            padding-left: 0;
+            justify-content: flex-start;
+            img{
+                width: min(30rem, 112vw);
+                max-width: none;
+                margin-left: -1rem;
+            }
+        }
+
+        .f-q-container .date-select-con .DateRangePickerInput .DateInput_input{
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+}
+
+// Responsive dropdown and picker panels for homepage controls
+.home-con .f-q-container .fdd-com{
+    position: relative;
+}
+
+.home-con .f-q-container .fdd-com .dropdown-menu{
+    min-width: 0;
+}
+
+.home-con .f-q-container .fdd-com .fdd-menu-primary{
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    max-height: min(16rem, 42vh);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.home-con .f-q-container .trip-details-con .trip-select-con{
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    padding: 0.5rem;
+}
+
+.home-con .f-q-container .trip-details-con .trip-select-con .trip-item{
+    font-size: 0.98rem;
+    line-height: 1.2;
+    padding: 0.38rem 0.24rem;
+}
+
+.home-con .f-q-container .passengercount-con{
+    position: relative;
+}
+
+.home-con .f-q-container .passengercount-con .dropdown-menu{
+    min-width: 0;
+}
+
+.home-con .f-q-container .passengercount-con .pass-class-con{
+    width: max(100%, 20rem);
+    min-width: 100%;
+    max-width: calc(100vw - 2rem);
+    max-height: min(28rem, 72vh);
+    overflow-y: auto;
+    right: 0;
+    left: auto;
+    padding: 0;
+}
+
+.home-con .f-q-container .passengercount-con .pass-detail-con{
+    width: 100%;
+    padding: clamp(0.85rem, 1.4vw, 1rem);
+}
+
+.home-con .f-q-container .date-select-con .SingleDatePicker_picker,
+.home-con .f-q-container .date-select-con .DateRangePicker_picker{
+    z-index: 50;
+}
+
+@media (max-width: 991px){
+    .home-con .f-q-container .fdd-com .fdd-menu-primary{
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
+        max-height: min(14rem, 36vh);
+    }
+
+    .home-con .f-q-container .passengercount-con .pass-class-con{
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
+        right: 0;
+        left: auto;
+    }
+}
+
+@media (max-width: 767px){
+    .home-con .f-q-container .fdd-com .fdd-menu-primary{
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
+        max-height: min(12rem, 32vh);
+        border-radius: 0.65rem;
+    }
+
+    .home-con .f-q-container .trip-details-con .trip-select-con{
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
+    }
+
+    .home-con .f-q-container .passengercount-con .pass-class-con{
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
+        max-height: min(23rem, 56vh);
+        left: 0;
+        right: auto;
+    }
+
+    .home-con .f-q-container .passengercount-con .pass-detail-con{
+        padding: 0.85rem;
+    }
+}
+
+// Typography + controls normalization for dropdown content (all viewports)
+.home-con .f-q-container .fdd-com .fdd-menu-primary .dd-m-item{
+    padding: 0.72rem 0.8rem;
+}
+
+.home-con .f-q-container .fdd-com .fdd-menu-primary .dd-m-item .d-city,
+.home-con .f-q-container .fdd-com .fdd-menu-primary .dd-m-item .d-code{
+    font: normal normal 500 clamp(1rem, 1.05vw, 1.16rem)/1.2 var(--font-Jotia);
+    margin-bottom: 0.25rem;
+}
+
+.home-con .f-q-container .fdd-com .fdd-menu-primary .dd-m-item .d-country{
+    font: normal normal normal clamp(0.84rem, 0.9vw, 0.98rem)/1.2 var(--font-Jotia);
+}
+
+.home-con .f-q-container .fdd-com .fdd-menu-primary .dd-m-item .d-name{
+    font: normal normal normal clamp(0.78rem, 0.84vw, 0.92rem)/1.2 var(--font-Jotia);
+    max-width: 58%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.home-con .f-q-container .passengercount-con .pass-detail-con{
+    font: normal normal normal clamp(0.9rem, 0.95vw, 1rem)/1.25 var(--font-Jotia);
+}
+
+.home-con .f-q-container .passengercount-con .pass-detail-con .p-d-heading{
+    font-size: 0.95rem;
+    padding-bottom: 0.5rem;
+}
+
+.home-con .f-q-container .passengercount-con .pass-detail-con .p-holder{
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+
+.home-con .f-q-container .passengercount-con .pass-detail-con .counter-con{
+    padding-bottom: 0.4rem;
+}
+
+.home-con .f-q-container .passengercount-con .pass-detail-con .p-counter,
+.home-con .f-q-container .passengercount-con .pass-detail-con .p-value{
+    width: 2rem;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.home-con .f-q-container .passengercount-con .pass-detail-con .class-con{
+    padding-top: 0.75rem;
+}
+
+.home-con .f-q-container .passengercount-con .pass-detail-con .select-label{
+    font-size: 0.92rem;
+}
+
+@media (max-width: 767px){
+    .home-con .f-q-container .fdd-com .fdd-menu-primary .dd-m-item{
+        padding: 0.62rem 0.68rem;
+    }
+
+    .home-con .f-q-container .fdd-com .fdd-menu-primary .dd-m-item .d-city,
+    .home-con .f-q-container .fdd-com .fdd-menu-primary .dd-m-item .d-code{
+        font-size: 0.95rem;
+    }
+
+    .home-con .f-q-container .fdd-com .fdd-menu-primary .dd-m-item .d-country,
+    .home-con .f-q-container .fdd-com .fdd-menu-primary .dd-m-item .d-name{
+        font-size: 0.78rem;
+    }
+
+    .home-con .f-q-container .passengercount-con .pass-detail-con .p-holder{
+        font-size: 0.82rem;
+    }
+
+    .home-con .f-q-container .passengercount-con .pass-detail-con .p-counter,
+    .home-con .f-q-container .passengercount-con .pass-detail-con .p-value{
+        width: 1.82rem;
+        min-width: 1.82rem;
+        height: 1.82rem;
+        font-size: 0.92rem;
+    }
+}
+
+// Final desktop override: airport dropdown spans From+To width
+@media (min-width: 1400px){
+    .home-con .f-q-container .fdd-com .fdd-menu-primary{
+        width: calc(200% + 1px) !important;
+        min-width: calc(200% + 1px) !important;
+        max-width: min(46rem, calc(100vw - 4rem)) !important;
+    }
+
+    .home-con .f-q-container .fdd-com:nth-child(2) .fdd-menu-primary{
+        left: auto !important;
+        right: 0 !important;
+    }
+}
