@@ -20,7 +20,13 @@ if (!MONGO_URI) {
 app.post('/api/v1/payments/webhook', express.raw({ type: 'application/json' }), handleStripeWebhook)
 
 app.use(express.json())
-app.use(cors())
+app.use(cors({
+    origin: [
+        'http://localhost:3000',
+        'https://flightbooking-backend-f0eafuafcpdaavfn.canadacentral-01.azurewebsites.net'
+    ],
+    credentials: true
+}))
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
