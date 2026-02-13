@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "logging": {
+    "fileLoggingMode": "always",
+    "logLevel": {
+      "default": "Information"
+    }
+  },
+  "appCommandLine": "node backend/index.js",
+  "httpLoggingEnabled": true
+}
