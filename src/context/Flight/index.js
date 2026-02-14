@@ -1,8 +1,57 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import * as moment from 'moment';
 import axios from 'axios'
 import { useAuth } from '../Auth'
 import { saveAs } from 'file-saver';
+
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://flightbooking-backend-f0eafuafcpdaavfn.canadacentral-01.azurewebsites.net/api/v1'
+const USE_MOCKS = process.env.REACT_APP_USE_MOCKS === 'true'
+
+const defaultAirports = [
+  {
+    name: 'John F. Kennedy International Airport',
+    city: 'New York',
+    id: 'JFK',
+    country: 'United States',
+  },
+  {
+    name: 'Los Angeles International Airport',
+    city: 'Los Angeles',
+    id: 'LAX',
+    country: 'United States',
+  },
+  {
+    name: 'San Francisco International Airport',
+    city: 'San Francisco',
+    id: 'SFO',
+    country: 'United States',
+  },
+  {
+    name: "O'Hare International Airport",
+    city: 'Chicago',
+    id: 'ORD',
+    country: 'United States',
+  },
+  {
+    name: 'Hartsfield-Jackson Atlanta International Airport',
+    city: 'Atlanta',
+    id: 'ATL',
+    country: 'United States',
+  },
+  {
+    name: 'Dallas/Fort Worth International Airport',
+    city: 'Dallas',
+    id: 'DFW',
+    country: 'United States',
+  },
+];
+
+const toMomentOrNull = (value) => {
+  if (!value) return null
+  if (moment.isMoment(value)) return value
+  const parsed = moment(value)
+  return parsed.isValid() ? parsed : null
+}
 
 const FlightContent = createContext()
 
@@ -10,48 +59,8 @@ const FlightContent = createContext()
 const FlightProvider = (props) => {
 
   const { auth } = useAuth()
-  axios.defaults.baseURL = "http://localhost:4000/api/v1"
+  axios.defaults.baseURL = API_BASE_URL
   axios.defaults.headers.common['auth-token'] = auth?.token
-
-  const defaultAirports = [
-    {
-      "name": "John F. Kennedy International Airport",
-      "city": "New York",
-      "id": "JFK",
-      "country": "United States"
-    },
-    {
-      "name": "Los Angeles International Airport",
-      "city": "Los Angeles",
-      "id": "LAX",
-      "country": "United States"
-    },
-    {
-      "name": "San Francisco International Airport",
-      "city": "San Francisco",
-      "id": "SFO",
-      "country": "United States"
-    },
-    {
-      "name": "O'Hare International Airport",
-      "city": "Chicago",
-      "id": "ORD",
-      "country": "United States"
-    },
-    {
-      "name": "Hartsfield-Jackson Atlanta International Airport",
-      "city": "Atlanta",
-      "id": "ATL",
-      "country": "United States"
-    },
-    {
-      "name": "Dallas/Fort Worth International Airport",
-      "city": "Dallas",
-      "id": "DFW",
-      "country": "United States"
-    }
-
-  ]
   const [Airports, setAirports] = useState([])
   const [airportsLoading, setAirportsLoading] = useState(false)
   const [airportsLoaded, setAirportsLoaded] = useState(false)
@@ -111,7 +120,15 @@ const FlightProvider = (props) => {
   const [alert, setAlert] = useState({})
   const [invalid, setInvalid] = useState({})
 
-  const ensureAirportsLoaded = async () => {
+  const ensureAirportsLoaded = useCallback(async () => {
+    if (USE_MOCKS) {
+      if (!airportsLoaded) {
+        setAirports(defaultAirports)
+        setAirportsLoaded(true)
+      }
+      return defaultAirports
+    }
+
     if (airportsLoaded || airportsLoading) {
       return Airports.length ? Airports : defaultAirports
     }
@@ -134,7 +151,7 @@ const FlightProvider = (props) => {
     } finally {
       setAirportsLoading(false)
     }
-  }
+  }, [Airports, airportsLoaded, airportsLoading])
 
   const searchAirports = async (query) => {
     const trimmedQuery = String(query || '').trim()
@@ -145,13 +162,15 @@ const FlightProvider = (props) => {
       return Airports.length ? Airports : defaultAirports
     }
 
-    try {
-      const { data } = await axios.get(`/airports?q=${encodeURIComponent(trimmedQuery)}&max=100`)
-      if (data?.success && Array.isArray(data.airports)) {
-        return data.airports
+    if (!USE_MOCKS) {
+      try {
+        const { data } = await axios.get(`/airports?q=${encodeURIComponent(trimmedQuery)}&max=100`)
+        if (data?.success && Array.isArray(data.airports)) {
+          return data.airports
+        }
+      } catch (error) {
+        // Ignore API errors and fallback to local options.
       }
-    } catch (error) {
-      // Ignore API errors and fallback to local options.
     }
 
     const normalizedQuery = trimmedQuery.toLowerCase()
@@ -236,42 +255,58 @@ const FlightProvider = (props) => {
     saveAs(pdfBlob, normalizedName)
   }
 
-
-
-
   useEffect(() => {
-    // Prefetch popular airports in the background so dropdowns feel instant.
-    ensureAirportsLoaded()
+    let cancelled = false
 
-    var data = JSON.parse(localStorage.getItem('searchedData'))
-    if (data) {
-      const normalizedOneWay = {
-        ...(data[3] || {}),
-        owdate: toMomentOrNull(data?.[3]?.owdate),
+    const safeParse = (key, fallback = null) => {
+      try {
+        const raw = localStorage.getItem(key)
+        return raw ? JSON.parse(raw) : fallback
+      } catch (error) {
+        return fallback
       }
-      const normalizedReturn = {
-        ...(data[4] || {}),
-        rtndate: {
-          startDate: toMomentOrNull(data?.[4]?.rtndate?.startDate),
-          endDate: toMomentOrNull(data?.[4]?.rtndate?.endDate),
-        },
+    }
+
+    const hydrateFromStorage = async () => {
+      await ensureAirportsLoaded()
+      if (cancelled) return
+
+      const data = safeParse('searchedData')
+      if (Array.isArray(data)) {
+        const normalizedOneWay = {
+          ...(data[3] || {}),
+          owdate: toMomentOrNull(data?.[3]?.owdate),
+        }
+        const normalizedReturn = {
+          ...(data[4] || {}),
+          rtndate: {
+            startDate: toMomentOrNull(data?.[4]?.rtndate?.startDate),
+            endDate: toMomentOrNull(data?.[4]?.rtndate?.endDate),
+          },
+        }
+        const normalizedData = [...data]
+        normalizedData[3] = normalizedOneWay
+        normalizedData[4] = normalizedReturn
+        setSearchFlights(normalizedData)
       }
-      const normalizedData = [...data]
-      normalizedData[3] = normalizedOneWay
-      normalizedData[4] = normalizedReturn
-      setSearchFlights(normalizedData)
-    }
-    var flightdata = JSON.parse(localStorage.getItem('tripFlights'))
-    if (flightdata) {
-      setTripFlights(flightdata)
+
+      const flightdata = safeParse('tripFlights')
+      if (Array.isArray(flightdata)) {
+        setTripFlights(flightdata)
+      }
+
+      const passengerData = safeParse('passengersdata')
+      if (Array.isArray(passengerData)) {
+        setLocalPassengers(passengerData)
+      }
     }
 
-    var passengerData = JSON.parse(localStorage.getItem('passengersdata'))
-    if (passengerData) {
-      setLocalPassengers(passengerData)
-    }
+    hydrateFromStorage()
 
-  }, [])
+    return () => {
+      cancelled = true
+    }
+  }, [ensureAirportsLoaded])
 
 
 
@@ -291,9 +326,3 @@ const FlightProvider = (props) => {
 const useFlight = () => useContext(FlightContent)
 
 export { useFlight, FlightProvider }
-  const toMomentOrNull = (value) => {
-    if (!value) return null
-    if (moment.isMoment(value)) return value
-    const parsed = moment(value)
-    return parsed.isValid() ? parsed : null
-  }

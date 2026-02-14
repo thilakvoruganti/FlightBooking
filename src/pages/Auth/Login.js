@@ -23,9 +23,9 @@ const Login = () => {
 
     useEffect(() => {
         // Clear shared form error state when entering login page.
-        setAlert((prev) => ({ ...prev, lemail: true, lpassword: true, servermsg: true }))
-        setInvalid((prev) => ({ ...prev, lemail: '', lpassword: '' }))
-    }, [setAlert, setInvalid])
+        setAlert((prev) => ({ ...prev, lemail: true, lpassword: true, servermsg: true }));
+        setInvalid((prev) => ({ ...prev, lemail: '', lpassword: '' }));
+    }, [setAlert, setInvalid]);
 
     const onChangelogin = (e) => {
         if (serverError) setServerError('')
@@ -55,7 +55,7 @@ const Login = () => {
         if (validation) {
             setIsSubmitting(true)
             try {
-                const response = await fetch("http://localhost:4000/api/v1/auth/login", {
+                const response = await fetch("https://flightbooking-backend-f0eafuafcpdaavfn.canadacentral-01.azurewebsites.net/api/v1/auth/login", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

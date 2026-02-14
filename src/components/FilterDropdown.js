@@ -16,14 +16,14 @@ const FilterDropdown = ({
     const [isLoading, setIsLoading] = useState(false)
 
     const localFilteredOptions = useMemo(() => {
-        const normalized = searchTerm.trim().toLowerCase()
-        if (!normalized) return options
+        const normalized = searchTerm.trim().toLowerCase();
+        if (!normalized) return options;
         return options.filter((element) =>
             [element.city, element.name, element.id].some((field) =>
                 String(field || '').toLowerCase().includes(normalized)
             )
-        )
-    }, [options, searchTerm])
+        );
+    }, [options, searchTerm]);
 
     useEffect(() => {
         let cancelled = false

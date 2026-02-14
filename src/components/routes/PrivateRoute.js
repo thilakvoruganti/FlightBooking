@@ -7,13 +7,13 @@ import Loader from './Loader'
 const PrivateRoute = () => {
     const {auth} = useAuth()
     const [ok,setOk] = useState(false)
-    useEffect(()=>{
-        if(auth?.token){
-            setOk(true)
-        }else{
-            setOk(false)
+    useEffect(() => {
+        if (auth?.token) {
+            setOk(true);
+        } else {
+            setOk(false);
         }
-    },[auth?.token])
+    }, [auth?.token]);
 
   return ok?<Outlet/>:<Loader/>
 }

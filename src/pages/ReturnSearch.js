@@ -5,6 +5,7 @@ import '../styles/Search.css'
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios'
 import {useFlight} from '../context/Flight'
+import { getMockFlights } from '../services/mockData'
 
 
 const ReturnSearch = () => {
@@ -23,10 +24,17 @@ const ReturnSearch = () => {
         return tripDate && typeof tripDate.format === 'function' ? tripDate.format('YYYY-MM-DD') : null
     }
 
+    const useMocks = process.env.REACT_APP_USE_MOCKS === 'true'
+
     const getFlights = async(from,to) => {
         setIsLoading(true)
         const departureDate = getDateForAmadeus()
         try {
+            if (useMocks) {
+                const offlineFlights = getMockFlights({ origin: from, destination: to })
+                setFlights(offlineFlights)
+                return
+            }
             if (departureDate) {
                 try {
                     const { data } = await axios.get(`/flights/amadeus?originLocationCode=${from}&destinationLocationCode=${to}&departureDate=${departureDate}&adults=${searchflights[5].adultCount || 1}&max=20&currencyCode=USD`)

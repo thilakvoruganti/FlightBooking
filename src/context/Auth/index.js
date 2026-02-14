@@ -11,17 +11,17 @@ const AuthProvider = (props) => {
     token:'',
   })
 
-  axios.defaults.baseURL = "http://localhost:4000/api/v1"
+  axios.defaults.baseURL = "https://flightbooking-backend-f0eafuafcpdaavfn.canadacentral-01.azurewebsites.net/api/v1"
   axios.defaults.headers.common['auth-token'] = auth?.token
 
 
-  useEffect(()=>{
-    const data = localStorage.getItem('auth')
-    if(data){
-      let parsed = JSON.parse(data)
-      setAuth({...auth,user:parsed.user,token:parsed.token})
+  useEffect(() => {
+    const data = localStorage.getItem('auth');
+    if (data) {
+      let parsed = JSON.parse(data);
+      setAuth({ user: parsed.user, token: parsed.token });
     }
-  },[])
+  }, [setAuth]);
 
   return (
     <AuthContent.Provider value={{auth, setAuth }}>

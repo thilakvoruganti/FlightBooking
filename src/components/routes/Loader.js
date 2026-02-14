@@ -8,16 +8,17 @@ const Loader = () => {
     const navigate = useNavigate()
     const location = useLocation()
     const [count,setCount] = useState(3)
-    useEffect(()=>{
-        const intervel = setInterval(() => {
-            setCount((currentCount) => --currentCount);
-        }, 1000);
-        count ===0 && navigate('/login',{
-            state: location.pathname,
-        })
-        return () => clearInterval(intervel)
-
-    },[count])
+    useEffect(() => {
+      const intervel = setInterval(() => {
+        setCount((currentCount) => --currentCount);
+      }, 1000);
+      if (count === 0) {
+        navigate('/login', {
+          state: location.pathname,
+        });
+      }
+      return () => clearInterval(intervel);
+    }, [count, navigate, location.pathname]);
   return (
     <div>Loader...</div>
   )

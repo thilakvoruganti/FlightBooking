@@ -51,7 +51,7 @@ const Register = () => {
             rdateofbirth: true,
             rgender: true,
             rstate: true,
-        }))
+        }));
         setInvalid((prev) => ({
             ...prev,
             remail: '',
@@ -63,8 +63,8 @@ const Register = () => {
             rdateofbirth: '',
             rgender: '',
             rstate: '',
-        }))
-    }, [setAlert, setInvalid])
+        }));
+    }, [setAlert, setInvalid]);
 
     const onChangelogin = (e) => {
         if (serverError) setServerError('')
@@ -180,7 +180,7 @@ const Register = () => {
         if (validation) {
             setIsSubmitting(true)
             try {
-                const response = await fetch("http://localhost:4000/api/v1/auth", {
+                const response = await fetch("https://flightbooking-backend-f0eafuafcpdaavfn.canadacentral-01.azurewebsites.net/api/v1/auth", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

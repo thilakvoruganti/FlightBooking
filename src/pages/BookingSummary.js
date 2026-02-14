@@ -21,16 +21,14 @@ const BookingSummary = () => {
 
     useEffect(() => {
         const handler = () => {
-            window.history.pushState({}, '', location.pathname)
-            alertBtn.current.click()
-
-        }
-        window.addEventListener('popstate', handler)
-
-        // return () => {
-        //     window.removeEventListener('popstate', handler)
-        // }
-    }, [])
+            window.history.pushState({}, '', location.pathname);
+            alertBtn.current.click();
+        };
+        window.addEventListener('popstate', handler);
+        return () => {
+            window.removeEventListener('popstate', handler);
+        };
+    }, [location.pathname, alertBtn]);
 
     // const alertBtn = useRef()
 
