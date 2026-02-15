@@ -1,13 +1,21 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Node.js app to Azure Web App - flightbooking-backend
+name: Backend CI/CD - flightbooking-backend
 
 on:
   push:
     branches:
       - main
   workflow_dispatch:
+
+env:
+  NODE_VERSION: '20.x'
+  BACKEND_DIR: backend
+  ARTIFACT_NAME: backend-package
+  PACKAGE_ARCHIVE: backend-package.zip
+  AZURE_WEBAPP_NAME: flightbooking-backend
+  AZURE_SLOT_NAME: Production
 
 jobs:
   build:
@@ -18,21 +26,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Node.js version
-        uses: actions/setup-node@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '22.x'
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ${{ env.BACKEND_DIR }}/package-lock.json
 
       - name: Install backend dependencies
-        run: |
-          npm install --legacy-peer-deps --prefix backend
-          npm prune --production --prefix backend
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: npm install --legacy-peer-deps
+
+      - name: Run backend tests
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: npm run test --if-present -- --passWithNoTests
+
+      - name: Prune dev dependencies
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: npm prune --production
+
+      - name: Package deployable artifact
+        run: zip -r ${{ env.PACKAGE_ARCHIVE }} ${{ env.BACKEND_DIR }} .deployment web.config
 
       - name: Upload backend artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: node-app
-          path: backend
+          name: ${{ env.ARTIFACT_NAME }}
+          path: ${{ env.PACKAGE_ARCHIVE }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -40,12 +60,18 @@ jobs:
     permissions:
       id-token: write #This is required for requesting the JWT
       contents: read #This is required for actions/checkout
+    environment:
+      name: production
+      url: https://flightbooking-backend-f0eafuafcpdaavfn.canadacentral-01.azurewebsites.net
 
     steps:
       - name: Download backend artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: node-app
+          name: ${{ env.ARTIFACT_NAME }}
+
+      - name: Verify artifact contents
+        run: unzip -l ${{ env.PACKAGE_ARCHIVE }}
       
       - name: Login to Azure
         uses: azure/login@v2
@@ -54,11 +80,15 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_7987E03DAD124361AD34B99DF1FF5FD0 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_560A7FB26A3946FCB0E022A7641B226D }}
 
-      - name: 'Deploy to Azure Web App'
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'flightbooking-backend'
-          slot-name: 'Production'
-          package: ./backend
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          slot-name: ${{ env.AZURE_SLOT_NAME }}
+          package: ${{ env.PACKAGE_ARCHIVE }}
+
+      - name: Logout from Azure
+        if: always()
+        run: az logout
           
