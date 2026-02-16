@@ -1,8 +1,33 @@
-import React, { useState,  useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
 import '../styles/Dashboard.css'
 import { useAuth } from '.././context/Auth'
 import axios from 'axios';
+
+const getObjectIdTimestamp = (value) => {
+    if (!value || typeof value !== 'string' || value.length < 8) return 0
+    const timestamp = parseInt(value.substring(0, 8), 16)
+    return Number.isFinite(timestamp) ? timestamp * 1000 : 0
+}
+
+const parseFlexibleDate = (value) => {
+    if (!value || typeof value !== 'string') return NaN
+    const normalized = value.replace(/(\d+)(st|nd|rd|th)/gi, '$1')
+    const parsed = Date.parse(normalized)
+    return Number.isNaN(parsed) ? NaN : parsed
+}
+
+const getBookingSortValue = (booking = {}) => {
+    const created = Date.parse(booking.createdAt || '')
+    if (!Number.isNaN(created)) return created
+    const updated = Date.parse(booking.updatedAt || '')
+    if (!Number.isNaN(updated)) return updated
+    const objectIdDate = getObjectIdTimestamp(booking._id)
+    if (objectIdDate) return objectIdDate
+    const departure = parseFlexibleDate(booking.departuredate)
+    if (!Number.isNaN(departure)) return departure
+    return 0
+}
 
 const Dashboard = () => {
     const {auth} = useAuth()
@@ -14,10 +39,23 @@ const Dashboard = () => {
 
 
     const [bookings, setBookings] = useState([])
+    const [isLoadingBookings, setIsLoadingBookings] = useState(false)
+    const [bookingError, setBookingError] = useState('')
 
     const getBookingsWU = async () => {
-        const { data } = await axios.get('/auth/myflights')
-        setBookings(data.flights)
+        setIsLoadingBookings(true)
+        setBookingError('')
+        try {
+            const { data } = await axios.get('/auth/myflights')
+            const flights = Array.isArray(data.flights) ? data.flights : []
+            const sortedFlights = [...flights].sort((a, b) => getBookingSortValue(b) - getBookingSortValue(a))
+            setBookings(sortedFlights)
+        } catch (error) {
+            setBookings([])
+            setBookingError('We could not load your latest trips. Please try again in a moment.')
+        } finally {
+            setIsLoadingBookings(false)
+        }
     }
 
     useEffect(() => {
@@ -102,12 +140,21 @@ const Dashboard = () => {
                                     <div className='bk-con-fi'>People</div>
                                 </div>
                                 <div className='bk-con-body'>
-                                    {bookings?.length === 0 ?
-                                        <div className='d-flex flex-column align-items-center'>
-                                            <div className='d-c-m'>You haven't made your first booking yet</div>
-                                            <div className='d-c-m'>All you need to do <Link to='/'>search flights</Link> to get started</div>
+                                    {isLoadingBookings ? (
+                                        <div className='bk-loading-state'>Fetching your trips...</div>
+                                    ) : bookings?.length === 0 ? (
+                                        <div className='bk-empty-state'>
+                                            <div className='bk-empty-icon' aria-hidden="true">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" role="img">
+                                                    <path d="M2 13.5c0-.552.448-1 1-1h1.382a1 1 0 0 0 .894-.553l.724-1.447a1 1 0 0 1 .894-.553H9.5l1.618-4.046A1 1 0 0 1 12.06 6h1.88a1 1 0 0 1 .942.664L16 10h3.486a1 1 0 0 1 .96 1.274l-1 3.5a1 1 0 0 1-.96.726H13.5l-.867 3.468A1 1 0 0 1 11.664 19H8a1 1 0 0 1-1-1v-.764l-1.894-1.263A1 1 0 0 1 5 15.132v-1.632L3 13.5z" fill="currentColor" />
+                                                </svg>
+                                            </div>
+                                            <div className='bk-empty-title'>You're cleared for takeoff</div>
+                                            <p className='bk-empty-copy'>Plan your first trip to see real-time tracking, payment status, and smooth PDF receipts all in one place.</p>
+                                            <button type='button' className='bk-empty-cta' onClick={() => navigate('/')}>Search flights</button>
+                                            {bookingError ? <div className='bk-empty-hint'>{bookingError}</div> : null}
                                         </div>
-                                        :
+                                    ) : (
                                         bookings?.map((element) => {
                                             return (
                                                 <div
@@ -136,9 +183,8 @@ const Dashboard = () => {
                                                     <div>{element.passengercount || '1 Traveler'}</div>
                                                 </div>
                                             )
-                                        }
-                                        )
-                                    }
+                                        })
+                                    )}
                                 </div>
 
                             </div>

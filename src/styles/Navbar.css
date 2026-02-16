@@ -93,9 +93,35 @@
   padding: 0.521vw 1.042vw;
   display: flex;
   align-items: center;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 .header .search-display .s-d-item {
   font: normal normal normal 0.99vw/1.042vw var(--font-Jotia);
+}
+
+.header .search-display .modify-search-con:hover {
+  background-color: rgba(31, 112, 92, 0.1);
+  color: #1f5138;
+}
+
+.header .search-display .modify-search-con:focus-within {
+  background-color: rgba(31, 112, 92, 0.12);
+  color: #1f5138;
+  box-shadow: inset 0 0 0 1px rgba(31, 112, 92, 0.2);
+}
+
+.header .search-display .modify-search-con .s-d-item {
+  cursor: pointer;
+}
+
+.header .search-display .modify-search-con .s-d-item:focus-visible {
+  outline: 2px solid #1f705c;
+  outline-offset: 2px;
+  background-color: rgba(31, 112, 92, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(31, 112, 92, 0.2);
+  border-radius: 999px;
 }
 
 .header {
@@ -293,6 +319,12 @@
   padding: 0;
   border-radius: 999px;
   line-height: 1;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.header .h-auth .myprofile-con .myprofile-btn:hover {
+  transform: translateY(-1px);
 }
 
 .header .h-auth .myprofile-con .myprofile-btn:focus-visible {

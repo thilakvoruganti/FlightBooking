@@ -61,9 +61,9 @@ const FlightProvider = (props) => {
   const { auth } = useAuth()
   axios.defaults.baseURL = API_BASE_URL
   axios.defaults.headers.common['auth-token'] = auth?.token
-  const [Airports, setAirports] = useState([])
+  const [Airports, setAirports] = useState(defaultAirports)
   const [airportsLoading, setAirportsLoading] = useState(false)
-  const [airportsLoaded, setAirportsLoaded] = useState(false)
+  const [airportsLoaded, setAirportsLoaded] = useState(USE_MOCKS)
   // Home
   //  const [search,setSearch] = useState('')
   //  const [pdinitial,setPdInitial] = useState([{}])

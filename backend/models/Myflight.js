@@ -106,6 +106,8 @@ const MyFlightSchema = new mongoose.Schema({
     rdestinationcode:{
         type:String,
     },
+},{
+    timestamps:true,
 })
 
 

@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios'
 import {useFlight} from '../context/Flight'
 import { getMockFlights } from '../services/mockData'
+import { getEcoScoreValue } from '../utils/ecoScore'
 
 
 const ReturnSearch = () => {
@@ -124,11 +125,11 @@ const ReturnSearch = () => {
             if (sortBy === 'fastest') {
                 return getDurationMinutes(a.duration) - getDurationMinutes(b.duration)
             }
-            const aCo2 = Number.isFinite(Number(a.co2kg)) ? Number(a.co2kg) : Number.MAX_SAFE_INTEGER
-            const bCo2 = Number.isFinite(Number(b.co2kg)) ? Number(b.co2kg) : Number.MAX_SAFE_INTEGER
-            return aCo2 - bCo2
+            const aScore = getEcoScoreValue({ flight: a, routeAverageCo2: ecoStats.routeAverageCo2, minCo2: ecoStats.minCo2 })
+            const bScore = getEcoScoreValue({ flight: b, routeAverageCo2: ecoStats.routeAverageCo2, minCo2: ecoStats.minCo2 })
+            return bScore - aScore
         })
-    }, [flights, sortBy, searchflights])
+    }, [flights, sortBy, searchflights, ecoStats])
 
   return (
     <div className="flight-item-con">

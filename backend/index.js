@@ -24,7 +24,7 @@ app.use(cors({
     origin: [
         'http://localhost:3000',
         'https://flightbooking-backend-f0eafuafcpdaavfn.canadacentral-01.azurewebsites.net',
-        'https://flight-booking-pdmr.vercel.app'
+        'https://flight-booking-pdmr.vercel.app',
     ],
     credentials: true
 }))

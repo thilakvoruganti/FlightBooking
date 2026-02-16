@@ -1,52 +1,16 @@
 import React from 'react'
 import { useFlight } from '../context/Flight'
+import { buildEcoInsights, ECO_LEVEL_LABELS } from '../utils/ecoScore'
 
 const Flightitem = ({flight,onChange, routeAverageCo2, minCo2}) => {
-    const ecoLevelLabel = {
-        low: 'Low',
-        medium: 'Medium',
-        high: 'High',
-        unknown: 'Unknown',
-    }
     const { searchflights} = useFlight()
-    const ecoLevel = (flight.ecolevel || 'unknown').toLowerCase()
+    const ecoStats = buildEcoInsights({ flight, routeAverageCo2, minCo2 })
+    const { ecoLevel, ecoScore, co2Value, ecoComparisonText, ecoContextText, isBestEco } = ecoStats
+    const ecoLevelLabel = ECO_LEVEL_LABELS
     const payingPassengers = searchflights[5].passengerCount - searchflights[5].infantCount
     const baseFare = searchflights[5].passengerClass === 'Economy' ? flight.economyprice : flight.premiumprice
     const totalFare = (typeof baseFare === 'number' ? baseFare : 0) * payingPassengers
-    const co2Value = Number(flight.co2kg)
-    const routeAverage = Number(routeAverageCo2)
-    const routeBest = Number(minCo2)
-    const hasCo2 = Number.isFinite(co2Value) && co2Value > 0
-    const hasRouteAverage = Number.isFinite(routeAverage) && routeAverage > 0
-    const co2DeltaPercent = hasCo2 && hasRouteAverage
-        ? ((co2Value - routeAverage) / routeAverage) * 100
-        : null
-    const stopsPenalty = typeof flight.stops === 'number' ? flight.stops * 5 : 0
-    const scoreFromCo2 = hasCo2 && hasRouteAverage
-        ? 72 - Math.max(-24, Math.min(34, co2DeltaPercent)) - stopsPenalty
-        : null
-    const ecoScoreFallback = {
-        low: 86,
-        medium: 64,
-        high: 42,
-        unknown: 55,
-    }
-    const ecoScore = Math.max(
-        20,
-        Math.min(98, Math.round(scoreFromCo2 ?? ecoScoreFallback[ecoLevel] ?? 55))
-    )
-    const roundedDelta = co2DeltaPercent === null ? null : Math.round(Math.abs(co2DeltaPercent))
-    const ecoComparisonText = !hasCo2
-        ? 'CO2 estimate unavailable for this option'
-        : !hasRouteAverage
-            ? 'Route baseline unavailable'
-            : Math.abs(co2DeltaPercent) < 2
-                ? 'About the same CO2 as route average'
-                : co2DeltaPercent < 0
-                    ? `${roundedDelta}% less CO2 than route average`
-                    : `${roundedDelta}% more CO2 than route average`
-    const ecoContextText = hasRouteAverage ? `Compared with ${routeAverage.toFixed(1)} kg route average` : 'Compared within this search'
-    const isBestEco = hasCo2 && Number.isFinite(routeBest) && Math.abs(co2Value - routeBest) < 0.05
+    const hasCo2 = Number.isFinite(co2Value)
 
     // const updateTripFlights = (index, value) => {
     //     const utf = tripFlights.map((c, i) => {
